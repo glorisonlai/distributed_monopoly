@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=D:\GitHub\distributed_monopoly\contract\target\wasm32-unknown-unknown\debug\build\typenum-6b6da229b2855924\out\consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=D:\GitHub\distributed_monopoly\contract\target\wasm32-unknown-unknown\debug\build\typenum-6b6da229b2855924\out\op.rs

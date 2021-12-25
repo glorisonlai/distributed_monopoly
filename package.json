@@ -1,0 +1,34 @@
+{
+  "name": "distributed_monopoly",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "postinstall": "concurrently \"cd app && npm install\" \"cd monopoly-backend && npm install\"",
+    "build": "npm run build:contract && npm run build:web",
+    "build:contract": "node contract/compile.js",
+    "build:contract:debug": "node contract/compile.js --debug && cp ./neardev/dev-account.env ./app/.env.development",
+    "build:web": "cd app && npm run build",
+    "dev:deploy:contract": "near dev-deploy",
+    "deploy:contract": "near deploy",
+    "deploy:pages": "gh-pages -d dist/",
+    "deploy:server": "cd monopoly-backend && npm run deploy",
+    "deploy": "npm run build && npm run deploy:contract && npm run deploy:pages && npm run deploy:server",
+    "prestart": "npm run build:contract:debug && npm run dev:deploy:contract && npm run build:web",
+    "start": "echo The app is starting! It will automatically open in your browser when ready && env-cmd -f ./neardev/dev-account.env npm run start:web",
+    "start:web": "cd app && npm run start",
+    "predev": "npm run build:contract:debug && npm run dev:deploy:contract",
+    "dev": "nodemon --watch contract/src -e rs --exec \"npm run dev:concurrent\"",
+    "dev:concurrent": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
+    "dev:web": "cd app && npm run dev",
+    "dev:server": "cd monopoly-backend && npm run dev",
+    "test": "npm run build:contract:debug && cd contract && cargo test -- --nocapture && cd ../app && jest test --runInBand"
+  },
+  "devDependencies": {
+    "concurrently": "^6.5.1",
+    "gh-pages": "~3.1.0",
+    "near-cli": "^3.1.0",
+    "nodemon": "~2.0.3",
+    "react-test-renderer": "~17.0.1",
+    "shelljs": "~0.8.4"
+  }
+}
