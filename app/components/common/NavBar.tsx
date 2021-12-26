@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ContractContext from "../../lib/context/contractProvider";
-import { login, logout } from "../../lib/wallet/utils";
+import { login, logout } from "../../lib/contract/utils";
 
 const NavBar = () => {
   const { walletConnection, currentUser } = useContext(ContractContext);

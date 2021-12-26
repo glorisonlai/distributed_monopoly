@@ -1,24 +1,24 @@
 import Background from "../../components/common/Bg";
-import Link from "next/link";
-import { FormEvent, useContext, useEffect, useState } from "react";
-import type { NearContext } from "../../lib/wallet/utils";
+import { FormEvent, useContext, useEffect } from "react";
 import ContractContext from "../../lib/context/contractProvider";
+import { useFormFields } from "../../lib/hooks/useFormFields";
 
 const GameLobby = () => {
   const { contract, walletConnection, currentUser } =
     useContext(ContractContext);
 
-  const [currentGreeting, setCurrentGreeting] = useState<string>("");
-
-  console.log(contract);
+  const { formFields, setFormFields, formChangeHandler } = useFormFields({
+    gameId: "",
+    newGameName: "",
+  });
 
   useEffect(() => {
     (async () => {
+      if (!currentUser?.accountId) return;
       contract
-        .get_greeting({ account_id: currentUser.accountId })
-        .then((greeting: string) => {
+        .get_user({ account_id: currentUser.accountId })
+        .then((greeting) => {
           console.log(greeting);
-          setCurrentGreeting(greeting);
         });
     })();
   }, [contract, currentUser]);
@@ -26,17 +26,19 @@ const GameLobby = () => {
   const searchGame = async (e: FormEvent) => {
     e.preventDefault();
     console.log("Searching game...");
-    contract
-      .get_greeting({ account_id: currentUser.accountId })
-      .then((greeting) => {
-        console.log(greeting);
-        contract.set_greeting({
-          message: greeting + "a",
-        });
-      });
+    const thing = await contract.join_game({
+      game_name: "test",
+      game_id: formFields.gameId,
+    });
+    setFormFields((form) => ({ ...form, gameId: "" }));
   };
 
-  console.log(currentGreeting);
+  const createGame = async (e: FormEvent) => {
+    e.preventDefault();
+    console.log("Creating game...");
+    await contract.create_game({ game_name: formFields.newGameName });
+    setFormFields((form) => ({ ...form, newGameName: "" }));
+  };
 
   return (
     <Background
@@ -47,9 +49,27 @@ const GameLobby = () => {
       <h1>Game Lobby</h1>
       <form onSubmit={searchGame}>
         <label htmlFor="game_code">Select Existing Game: </label>
-        <input type="search" id="game_code" name="game_code" />
+        <input
+          type="search"
+          id="game_code"
+          name="game_code"
+          value={formFields.gameId}
+          onChange={formChangeHandler("gameId")}
+        />
         <label htmlFor="error" hidden={true}></label>
         <input type="submit" value="Join" />
+      </form>
+
+      <form onSubmit={createGame}>
+        <label htmlFor="game_name">Create New Game: </label>
+        <input
+          id="game_name"
+          name="game_name"
+          value={formFields.newGameName}
+          onChange={formChangeHandler("newGameName")}
+        />
+        <label htmlFor="error" hidden={true}></label>
+        <input type="submit" value="Create" />
       </form>
     </Background>
   );

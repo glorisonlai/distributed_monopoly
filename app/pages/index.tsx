@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useContext } from "react";
 import BirdsPage from "../components/house/scene";
 import Background from "../components/common/Bg";
-import { login } from "../lib/wallet/utils";
+import { login } from "../lib/contract/utils";
 import ContractContext from "../lib/context/contractProvider";
 
 const Home: NextPage = () => {

@@ -4,7 +4,6 @@ import { NoSsrComponent } from "../components/common/NoSSR";
 const Wallet = () => {
   const User = () => {
     const currentUrl = new URL(window.location.href);
-    console.log("hello");
     const message = `NODE_ENV=local near create_account {newAccountId} --masterAccount {masterAccountId} --publicKey ${currentUrl.searchParams.get(
       "public_key"
     )} --initialAmount 10000000000000000000`;

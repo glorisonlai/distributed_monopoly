@@ -1,8 +1,8 @@
 import "regenerator-runtime/runtime";
 import React, { useContext } from "react";
-import { login, logout } from "../lib/wallet/utils";
+import { login, logout } from "../lib/contract/utils";
 
-import getConfig from "../lib/wallet/config";
+import getConfig from "../lib/contract/config";
 import ContractContext from "../lib/context/contractProvider";
 const { networkId } = getConfig(process.env.NODE_ENV || "development");
 
@@ -26,7 +26,7 @@ export default function App() {
       if (walletConnection.isSignedIn()) {
         // contract is set by initContract in index.js
         contract
-          .get_greeting({ account_id: walletConnection.account })
+          .get_greeting({ account_id: currentUser.accountId })
           .then((greetingFromContract: string) => {
             set_greeting(greetingFromContract);
           });

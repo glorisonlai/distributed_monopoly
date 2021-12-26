@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { initContract } from "../wallet/utils";
-import type { NearContext } from "../wallet/utils";
+import { initContract } from "../contract/utils";
+import type { NearContext } from "../contract/types";
 
 export const useContract = () => {
   const [contract, setContract] = useState<NearContext | null>(null);
@@ -8,7 +8,6 @@ export const useContract = () => {
   useEffect(() => {
     (async () => {
       const contract = await initContract();
-      console.log("contract:, ", contract);
       setContract(contract);
     })();
   }, []);

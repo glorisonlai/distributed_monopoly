@@ -10,48 +10,145 @@
  * https://github.com/near/near-sdk-rs
  *
  */
+pub mod game;
+pub mod user;
 
 // To conserve gas, efficient serialization is achieved through Borsh (http://borsh.io/)
+use game::game::Game;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, near_bindgen, setup_alloc};
 use near_sdk::collections::LookupMap;
+use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::{env, near_bindgen, setup_alloc};
+use std::str;
+use user::user::User;
 
 setup_alloc!();
+
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct ReturnRes<T> {
+    success: bool,
+    error: Option<String>,
+    message: Option<T>,
+}
 
 // Structs in Rust are similar to other languages, and may include impl keyword as shown below
 // Note: the names of the structs are not important when calling the smart contract, but the function names are
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
-pub struct Welcome {
-    records: LookupMap<String, String>,
+pub struct Contract {
+    pub games: LookupMap<String, Game>,
+    pub users: LookupMap<String, User>,
 }
 
-impl Default for Welcome {
-  fn default() -> Self {
-    Self {
-      records: LookupMap::new(b"a".to_vec()),
+impl Default for Contract {
+    fn default() -> Self {
+        Self {
+            users: LookupMap::new(b"a".to_vec()),
+            games: LookupMap::new(b"g".to_vec()),
+        }
     }
-  }
 }
 
 #[near_bindgen]
-impl Welcome {
-    pub fn set_greeting(&mut self, message: String) {
-        let account_id = env::signer_account_id();
-
-        // Use env::log to record logs permanently to the blockchain!
-        env::log(format!("Saving greeting '{}' for account '{}'", message, account_id,).as_bytes());
-
-        self.records.insert(&account_id, &message);
+// View functions
+impl Contract {
+    pub fn join_game(&self, game_name: String, game_id: String) -> ReturnRes<Game> {
+        match self.games.get(&game_id) {
+            Some(game) => {
+                let account_id = env::signer_account_id();
+                env::log(
+                    format!(
+                        "Joining game '{}' for account '{}' with hash '{:?}'",
+                        game_name, account_id, game_id
+                    )
+                    .as_bytes(),
+                );
+                // self.games.insert(&game_id, &account_id);
+                ReturnRes::<Game> {
+                    success: true,
+                    message: Some(game),
+                    error: None,
+                }
+            }
+            None => ReturnRes::<Game> {
+                success: false,
+                error: Some("Game does not exist".to_string()),
+                message: None,
+            },
+        }
     }
 
-    // `match` is similar to `switch` in other languages; here we use it to default to "Hello" if
-    // self.records.get(&account_id) is not yet defined.
-    // Learn more: https://doc.rust-lang.org/book/ch06-02-match.html#matching-with-optiont
-    pub fn get_greeting(&self, account_id: String) -> String {
-        match self.records.get(&account_id) {
-            Some(greeting) => greeting,
-            None => "Hello".to_string(),
+    pub fn get_user(&self, account_id: String) -> ReturnRes<String> {
+        match self.users.get(&account_id) {
+            Some(user) => ReturnRes {
+                success: true,
+                message: Some("hello".to_string()),
+                error: None,
+            },
+            None => ReturnRes {
+                success: false,
+                error: Some("User does not exist".to_string()),
+                message: None,
+            },
+        }
+    }
+}
+
+// Change methods
+impl Contract {
+    pub fn register_user(&mut self) -> bool {
+        let account_id = env::signer_account_id();
+        match self.users.get(&account_id) {
+            Some(_) => {
+                env::log(format!("User '{}' already registered", account_id).as_bytes());
+                false
+            }
+            None => {
+                env::log(format!("Registering user '{}'", account_id).as_bytes());
+                self.users.insert(&account_id, &User::new());
+                true
+            }
+        }
+    }
+
+    pub fn create_game(&mut self, game_name: String) -> ReturnRes<String> {
+        let creator_id = env::signer_account_id();
+        if !self.user_exists(&creator_id) {
+            return ReturnRes {
+                success: false,
+                error: Some("Signer does not exist".to_string()),
+                message: None,
+            };
+        }
+        let game_id = format!("{}-{}", creator_id, env::block_timestamp());
+        // self.users
+        //     .get(&creator_id)
+        //     .unwrap()
+        //     .games
+        //     .push(game_id);
+        env::log(
+            format!(
+                "Creating game '{}' for account '{}' with hash '{}'",
+                game_name, creator_id, game_id
+            )
+            .as_bytes(),
+        );
+        self.games.insert(&game_id, &Game::new(game_id.clone()));
+        return ReturnRes {
+            success: true,
+            error: None,
+            message: Some(game_id),
+        };
+    }
+}
+
+// Private functions
+impl Contract {
+    fn user_exists(&self, account_id: &String) -> bool {
+        match self.users.get(account_id) {
+            Some(_) => true,
+            None => false,
         }
     }
 }
@@ -95,27 +192,27 @@ mod tests {
         }
     }
 
-    #[test]
-    fn set_then_get_greeting() {
-        let context = get_context(vec![], false);
-        testing_env!(context);
-        let mut contract = Welcome::default();
-        contract.set_greeting("howdy".to_string());
-        assert_eq!(
-            "howdy".to_string(),
-            contract.get_greeting("bob_near".to_string())
-        );
-    }
+    // #[test]
+    // fn set_then_get_greeting() {
+    //     let context = get_context(vec![], false);
+    //     testing_env!(context);
+    //     let mut contract = Contract::default();
+    //     contract.set_greeting("howdy".to_string());
+    //     assert_eq!(
+    //         "howdy".to_string(),
+    //         contract.get_greeting("bob_near".to_string())
+    //     );
+    // }
 
-    #[test]
-    fn get_default_greeting() {
-        let context = get_context(vec![], true);
-        testing_env!(context);
-        let contract = Welcome::default();
-        // this test did not call set_greeting so should return the default "Hello" greeting
-        assert_eq!(
-            "Hello".to_string(),
-            contract.get_greeting("francis.near".to_string())
-        );
-    }
+    // #[test]
+    // fn get_default_greeting() {
+    //     let context = get_context(vec![], true);
+    //     testing_env!(context);
+    //     let contract = Contract::default();
+    //     // this test did not call set_greeting so should return the default "Hello" greeting
+    //     assert_eq!(
+    //         "Hello".to_string(),
+    //         contract.get_greeting("francis.near".to_string())
+    //     );
+    // }
 }
