@@ -1,20 +1,14 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::serde::Serialize;
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct User {
-	pub id: String,
-	pub bank: u128,
-	pub games: Vec<(String, u16)>,
+	pub games: Vec<String>,
 }
 
 impl User {
 	pub fn new() -> Self {
-		Self {
-			id: "".to_string(),
-			bank: 0,
-			games: vec![],
-		}
+		Self { games: vec![] }
 	}
 }

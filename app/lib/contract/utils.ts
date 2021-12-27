@@ -6,9 +6,9 @@ const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
 const contractMethods: ContractMethods = {
   // View methods are read only. They don't modify the state, but usually return some value.
-  viewMethods: ["get_user", "join_game"],
+  viewMethods: ["get_user", "view_game"],
   // Change methods can modify the state. But you don't receive the returned value when called.
-  changeMethods: ["register_user", "create_game"],
+  changeMethods: ["register_user", "create_game", "join_game"],
 };
 
 // Initialize contract & set global variables

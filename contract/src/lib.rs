@@ -17,19 +17,25 @@ pub mod user;
 use game::game::Game;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LookupMap;
-use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::serde::Serialize;
+use near_sdk::BorshStorageKey;
 use near_sdk::{env, near_bindgen, setup_alloc};
-use std::str;
 use user::user::User;
 
 setup_alloc!();
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
-pub struct ReturnRes<T> {
+pub struct ReturnRes<T: Serialize> {
     success: bool,
     error: Option<String>,
     message: Option<T>,
+}
+
+#[derive(BorshSerialize, BorshStorageKey)]
+pub enum StorageKeys {
+    Users,
+    Games,
 }
 
 // Structs in Rust are similar to other languages, and may include impl keyword as shown below
@@ -44,23 +50,23 @@ pub struct Contract {
 impl Default for Contract {
     fn default() -> Self {
         Self {
-            users: LookupMap::new(b"a".to_vec()),
-            games: LookupMap::new(b"g".to_vec()),
+            users: LookupMap::new(StorageKeys::Users),
+            games: LookupMap::new(StorageKeys::Games),
         }
     }
 }
 
-#[near_bindgen]
 // View functions
+#[near_bindgen]
 impl Contract {
-    pub fn join_game(&self, game_name: String, game_id: String) -> ReturnRes<Game> {
+    pub fn view_game(&self, game_id: String) -> ReturnRes<Game> {
         match self.games.get(&game_id) {
             Some(game) => {
                 let account_id = env::signer_account_id();
                 env::log(
                     format!(
                         "Joining game '{}' for account '{}' with hash '{:?}'",
-                        game_name, account_id, game_id
+                        game.name, account_id, game_id
                     )
                     .as_bytes(),
                 );
@@ -79,11 +85,11 @@ impl Contract {
         }
     }
 
-    pub fn get_user(&self, account_id: String) -> ReturnRes<String> {
+    pub fn get_user(&self, account_id: String) -> ReturnRes<User> {
         match self.users.get(&account_id) {
             Some(user) => ReturnRes {
                 success: true,
-                message: Some("hello".to_string()),
+                message: Some(user),
                 error: None,
             },
             None => ReturnRes {
@@ -96,60 +102,100 @@ impl Contract {
 }
 
 // Change methods
+#[near_bindgen]
 impl Contract {
-    pub fn register_user(&mut self) -> bool {
+    pub fn register_user(&mut self) -> ReturnRes<User> {
         let account_id = env::signer_account_id();
         match self.users.get(&account_id) {
-            Some(_) => {
+            Some(user) => {
                 env::log(format!("User '{}' already registered", account_id).as_bytes());
-                false
+                ReturnRes::<User> {
+                    success: false,
+                    error: Some("User already registered".to_string()),
+                    message: Some(user),
+                }
             }
             None => {
                 env::log(format!("Registering user '{}'", account_id).as_bytes());
                 self.users.insert(&account_id, &User::new());
-                true
+                ReturnRes::<User> {
+                    success: true,
+                    message: Some(self.users.get(&account_id).unwrap()),
+                    error: None,
+                }
             }
         }
     }
 
-    pub fn create_game(&mut self, game_name: String) -> ReturnRes<String> {
+    #[payable]
+    pub fn create_game(&mut self, game_name: String) -> ReturnRes<Game> {
         let creator_id = env::signer_account_id();
-        if !self.user_exists(&creator_id) {
-            return ReturnRes {
+        let game_bank = 0;
+        // let game_bank = env::attached_deposit();
+        if self.user_exists(&creator_id) {
+            let game_id = format!("{}-{}", creator_id, env::block_timestamp());
+            env::log(
+                format!(
+                    "Creating game '{}' for account '{}' with hash '{}'",
+                    game_name, creator_id, game_id
+                )
+                .as_bytes(),
+            );
+            self.games.insert(
+                &game_id,
+                &Game::new(game_id.clone(), game_name, game_bank, creator_id),
+            );
+            self.join_game(game_id.clone())
+        } else {
+            ReturnRes::<Game> {
                 success: false,
-                error: Some("Signer does not exist".to_string()),
+                error: Some("User does not exist".to_string()),
                 message: None,
-            };
+            }
         }
-        let game_id = format!("{}-{}", creator_id, env::block_timestamp());
-        // self.users
-        //     .get(&creator_id)
-        //     .unwrap()
-        //     .games
-        //     .push(game_id);
-        env::log(
-            format!(
-                "Creating game '{}' for account '{}' with hash '{}'",
-                game_name, creator_id, game_id
-            )
-            .as_bytes(),
-        );
-        self.games.insert(&game_id, &Game::new(game_id.clone()));
-        return ReturnRes {
-            success: true,
-            error: None,
-            message: Some(game_id),
-        };
+    }
+
+    pub fn join_game(&mut self, game_id: String) -> ReturnRes<Game> {
+        let account_id = env::signer_account_id();
+        match self.games.get(&game_id) {
+            Some(mut game) => match self.users.get(&account_id) {
+                Some(mut user) => {
+                    env::log(
+                        format!(
+                            "Joining game '{}' for account '{}' with hash '{:?}'",
+                            game.name, account_id, game_id
+                        )
+                        .as_bytes(),
+                    );
+                    if !game.player_pos.get(&account_id).is_some() {
+                        game.player_pos.insert(&account_id, &0);
+                        user.games.push(game_id.clone());
+                    }
+                    return ReturnRes::<Game> {
+                        success: true,
+                        message: Some(game),
+                        error: None,
+                    };
+                }
+                None => ReturnRes::<Game> {
+                    success: false,
+                    error: Some("User does not exist".to_string()),
+                    message: None,
+                },
+            },
+            None => ReturnRes::<Game> {
+                success: false,
+                error: Some("Game does not exist".to_string()),
+                message: None,
+            },
+        }
     }
 }
 
 // Private functions
 impl Contract {
     fn user_exists(&self, account_id: &String) -> bool {
-        match self.users.get(account_id) {
-            Some(_) => true,
-            None => false,
-        }
+        self.users.contains_key(account_id)
     }
 }
 

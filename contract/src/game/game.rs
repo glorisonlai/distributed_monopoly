@@ -1,19 +1,63 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::collections::UnorderedMap;
+use near_sdk::serde::{ser::SerializeMap, Serialize, Serializer};
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(BorshSerialize, BorshDeserialize)]
+pub struct MyMap<K, V>(UnorderedMap<K, V>);
+
+impl<K, V> MyMap<K, V>
+where
+	K: BorshDeserialize + BorshSerialize,
+	V: BorshDeserialize + BorshSerialize,
+{
+	pub fn new() -> Self {
+		Self(UnorderedMap::new(b"p".to_vec()))
+	}
+
+	pub fn insert(&mut self, key: &K, value: &V) {
+		self.0.insert(key, value);
+	}
+
+	pub fn get(&self, key: &K) -> Option<V> {
+		self.0.get(key)
+	}
+}
+
+#[derive(Serialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Game {
 	pub id: String,
+	pub name: String,
 	pub bank: u128,
-	pub player_pos: Vec<(String, u16)>,
+	pub owner: String,
+	pub player_pos: MyMap<String, u8>,
 }
+
+impl<K, V> Serialize for MyMap<K, V>
+where
+	K: Serialize + BorshSerialize + BorshDeserialize,
+	V: Serialize + BorshDeserialize + BorshSerialize,
+{
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer,
+	{
+		let mut map = serializer.serialize_map(Some(self.0.len() as usize))?;
+		for (k, v) in self.0.iter() {
+			map.serialize_entry(&k, &v)?;
+		}
+		map.end()
+	}
+}
+
 impl Game {
-	pub fn new(game_id: String) -> Self {
+	pub fn new(game_id: String, game_name: String, initial_bank: u128, owner: String) -> Self {
 		Self {
 			id: game_id,
-			bank: 0,
-			player_pos: vec![],
+			name: game_name,
+			bank: initial_bank,
+			owner: owner,
+			player_pos: MyMap::new(),
 		}
 	}
 }
