@@ -6,7 +6,7 @@ const Background: React.FC<{
   description?: string;
   favicon?: string;
 }> = ({ title, description, favicon, children }) => (
-  <div className="flex flex-auto flex-col bg-gray-700 w-screen">
+  <div className="flex flex-auto flex-col bg-gray-700 w-screen h-full">
     <Head>
       <title>{title || "Capitalism"}</title>
       <meta name="description" content={description || ""} />

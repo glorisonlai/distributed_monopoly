@@ -3,8 +3,8 @@ import type { AppProps } from "next/app";
 import ContractContext from "../lib/context/contractProvider";
 import { useContract } from "../lib/hooks/useContract";
 import NavBar from "../components/common/NavBar";
-import Scene from "../components/house/scene";
-import { Box } from "../components/house/examples";
+import Scene from "../components/common/Scene";
+import { Box } from "../components/game/examples";
 import Background from "../components/common/Bg";
 import Footer from "../components/common/Footer";
 

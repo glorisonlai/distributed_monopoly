@@ -11,13 +11,9 @@ import Popup from "../../components/common/Popup";
 const GameLobby = () => {
   const { contract, currentUser } = useContext(ContractContext);
 
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<Option<User>>(null);
   const [recentGames, setRecentGames] = useState<Game[]>([]);
-
-  const { formFields, setFormFields, formChangeHandler } = useFormFields({
-    gameId: "",
-    newGameName: "",
-  });
 
   useEffect(() => {
     (async () => {
@@ -29,6 +25,7 @@ const GameLobby = () => {
         } else {
           console.error(res.error);
         }
+        setLoading(false);
       });
     })();
   }, [contract, currentUser]);
@@ -48,47 +45,36 @@ const GameLobby = () => {
       })();
   }, [user, contract]);
 
-  const searchGame = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Searching game...");
-    const { success, result, error } = await contract.view_game({
-      game_id: formFields.gameId,
-    });
-    if (success) {
-      Router.push(`/game/${result!.id}`);
-    }
-    setFormFields((form) => ({ ...form, gameId: "" }));
-  };
-
-  const createGame = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Creating game...");
-    const { success } = await contract.create_game({
-      game_name: formFields.newGameName,
-    });
-
-    setFormFields((form) => ({ ...form, newGameName: "" }));
-  };
-
   const registerUser = async () => {
     console.log(`Registering user '${currentUser.accountId}'...`);
     await contract.register_user();
   };
 
-  const RecentGameMenu: FC<{ recentGames?: Game[] }> = ({ recentGames }) => (
-    <div className="flex flex-col">
-      <h1>Recent Games</h1>
-      <hr className="divide-y-2" />
-      {recentGames &&
-        recentGames.map((game) => (
-          <Link key={game.id} href={`/game/${game.id}`} passHref={true}>
-            <div className="flex cursor-pointer">
-              <div className="flex flex-row">
-                <h3>{game.name}</h3>
-              </div>
-            </div>
-          </Link>
-        ))}
+  const RecentGameMenu: FC<{ recentGames: Game[] }> = ({ recentGames }) => (
+    <div className="flex flex-col text-white rounded border-[1px] p-4">
+      <h1 className="font-bold text-2xl">Recent Games</h1>
+      <div className="h-[600px] overflow-auto">
+        {recentGames.length ? (
+          recentGames.map((game) => (
+            <>
+              <hr className="divide-y-2 mt-2" />
+              <Link key={game.id} href={`/game/${game.id}`} passHref={true}>
+                <div className="flex cursor-pointer hover:bg-slate-800 p-2">
+                  <div className="flex flex-col">
+                    <h3 className="font-bold">{game.name}</h3>
+                    <p className="text-slate-300 text-sm">{game.id}</p>
+                  </div>
+                </div>
+              </Link>
+            </>
+          ))
+        ) : (
+          <>
+            <h3>Nothing to see here!</h3>
+            <h4>Try creating a new game!</h4>
+          </>
+        )}
+      </div>
     </div>
   );
 
@@ -130,40 +116,146 @@ const GameLobby = () => {
     );
   };
 
+  const GameLobbyForm = () => {
+    enum Screens {
+      viewGame = "View Game",
+      createGame = "Create Game",
+    }
+
+    const { formFields, setFormFields, formChangeHandler } = useFormFields({
+      gameId: "",
+      newGameName: "",
+    });
+    const [screenId, setScreenId] = useState<Screens>(Screens.viewGame);
+    const [error, setError] = useState<string>("");
+
+    const searchGame = async (e: FormEvent) => {
+      e.preventDefault();
+      console.log("Searching game...");
+      const res = await contract.view_game({
+        game_id: formFields.gameId,
+      });
+      if (res.success) {
+        Router.push(`/game/${res.result.id}`);
+      } else {
+        setError(res.error);
+      }
+      setFormFields((form) => ({ ...form, gameId: "" }));
+    };
+
+    const createGame = async (e: FormEvent) => {
+      e.preventDefault();
+      console.log("Creating game...");
+      const { success } = await contract.create_game({
+        game_name: formFields.newGameName,
+      });
+
+      setFormFields((form) => ({ ...form, newGameName: "" }));
+    };
+
+    return (
+      <div className="rounded border-[1px] border-slate-200 h-fit text-white w-96">
+        <div className="flex flex-row flex-grow justify-evenly">
+          <button
+            className={`w-full ${
+              screenId === Screens.viewGame
+                ? "bg-gray-700 cursor-default"
+                : "bg-gray-800 hover:bg-gray-900"
+            } font-bold py-2 px-4 rounded`}
+            onClick={() => setScreenId(Screens.viewGame)}
+          >
+            {Screens.viewGame}
+          </button>
+          <button
+            className={`w-full ${
+              screenId === Screens.createGame
+                ? "bg-gray-700 cursor-default"
+                : "bg-gray-800 hover:bg-gray-900"
+            } font-bold py-2 px-4 rounded`}
+            onClick={() => setScreenId(Screens.createGame)}
+          >
+            {Screens.createGame}
+          </button>
+        </div>
+        <div className="pt-4">
+          {
+            {
+              "View Game": (
+                <form className="px-1" onSubmit={searchGame}>
+                  <label htmlFor="game_code">Game ID: </label>
+                  <input
+                    type="search"
+                    id="game_code"
+                    name="game_code"
+                    value={formFields.gameId}
+                    onChange={formChangeHandler("gameId")}
+                    className="mx-2 p-1 rounded text-black"
+                  />
+                  <br />
+                  <label
+                    className="right-0 text-right text-sm text-red-500 font-bold"
+                    htmlFor="error"
+                    // hidden={!error}
+                  >
+                    {error}
+                  </label>
+                  <br />
+                  <div className="flex flex-row bg-gray-800 hover:bg-gray-900 p-2 font-bold">
+                    <input
+                      className="w-full cursor-pointer"
+                      type="submit"
+                      value="Join"
+                    />
+                  </div>
+                </form>
+              ),
+
+              "Create Game": (
+                <form className="px-1" onSubmit={createGame}>
+                  <label htmlFor="game_name">Create New Game: </label>
+                  <input
+                    id="game_name"
+                    name="game_name"
+                    value={formFields.newGameName}
+                    onChange={formChangeHandler("newGameName")}
+                    className="mx-2 p-1 rounded text-black"
+                  />
+                  <br />
+                  <label
+                    className="right-0 text-right text-sm text-red-500 font-bold"
+                    htmlFor="error"
+                    // hidden={!error}
+                  >
+                    {error}
+                  </label>
+                  <br />
+                  <div className="flex flex-row bg-gray-800 hover:bg-gray-900 p-2 font-bold">
+                    <input
+                      className="w-full cursor-pointer"
+                      type="submit"
+                      value="Create Game"
+                    />
+                  </div>
+                </form>
+              ),
+            }[screenId]
+          }
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Background title="Lobby" description="Game Lobby">
-      <div className="flex flex-row justify-around">
+      <div className="flex flex-row justify-around py-8 h-full">
         <RecentGameMenu recentGames={recentGames} />
-        <div className="flex flex-col">
-          {!!user || (
+        <div className="flex flex-col h-full">
+          {!user && !loading && (
             <NoSsrComponent>
               <RegisterUserForm />
             </NoSsrComponent>
           )}
-          <form onSubmit={searchGame}>
-            <label htmlFor="game_code">Select Existing Game: </label>
-            <input
-              type="search"
-              id="game_code"
-              name="game_code"
-              value={formFields.gameId}
-              onChange={formChangeHandler("gameId")}
-            />
-            <label htmlFor="error" hidden={true}></label>
-            <input type="submit" value="Join" />
-          </form>
-
-          <form onSubmit={createGame}>
-            <label htmlFor="game_name">Create New Game: </label>
-            <input
-              id="game_name"
-              name="game_name"
-              value={formFields.newGameName}
-              onChange={formChangeHandler("newGameName")}
-            />
-            <label htmlFor="error" hidden={true}></label>
-            <input type="submit" value="Create" />
-          </form>
+          <GameLobbyForm />
         </div>
       </div>
     </Background>

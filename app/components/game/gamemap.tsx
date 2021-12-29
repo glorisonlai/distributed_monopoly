@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 const Gamemap: FC<{
   className: string;
@@ -8,6 +8,13 @@ const Gamemap: FC<{
   const length = 9;
   const height = 5;
   const padding = 30;
+
+  const showMap = true;
+  // const [showMap, setShowMap] = useState(true);
+
+  // useEffect(() => {
+  //   window.addEventListener("mouseleave", () => setShowMap(false));
+  // }, []);
 
   const calculatePosition = (position: number) => ({
     x:
@@ -58,19 +65,21 @@ const Gamemap: FC<{
   };
 
   return (
-    <svg
-      width={padding * length}
-      height={padding * height}
-      viewBox={`0 0 ${padding * length} ${padding * height}`}
-      className={className}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {[...Array(2 * length + 2 * height - 4)].map((_, i) =>
-        Tile(i, i in houses)
-      )}
-      {Player(position)}
-    </svg>
+    <div hidden={!showMap}>
+      <svg
+        width={padding * length}
+        height={padding * height}
+        viewBox={`0 0 ${padding * length} ${padding * height}`}
+        className={className}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {[...Array(2 * length + 2 * height - 4)].map((_, i) =>
+          Tile(i, i in houses)
+        )}
+        {Player(position)}
+      </svg>
+    </div>
   );
 };
 

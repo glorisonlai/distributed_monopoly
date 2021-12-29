@@ -31,13 +31,7 @@ const GamePage = () => {
       {error ? (
         <div>Error: {error}</div>
       ) : game ? (
-        <>
-          <div className="flex flex-row flex-initial justify-between">
-            <Link href="/game"> &lt;- Back</Link>
-            <h1>{game.name}</h1>
-          </div>
-          <Gameboard game={game} />
-        </>
+        <Gameboard game={game} />
       ) : (
         <div>Loading...</div>
       )}
