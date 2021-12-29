@@ -21,6 +21,10 @@ where
 	pub fn get(&self, key: &K) -> Option<V> {
 		self.0.get(key)
 	}
+
+	pub fn len(&self) -> u64 {
+		self.0.len()
+	}
 }
 
 #[derive(Serialize, BorshDeserialize, BorshSerialize)]
@@ -42,7 +46,7 @@ where
 	where
 		S: Serializer,
 	{
-		let mut map = serializer.serialize_map(Some(self.0.len() as usize))?;
+		let mut map = serializer.serialize_map(Some(self.len() as usize))?;
 		for (k, v) in self.0.iter() {
 			map.serialize_entry(&k, &v)?;
 		}

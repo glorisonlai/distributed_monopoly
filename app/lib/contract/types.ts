@@ -19,20 +19,28 @@ export interface Game {
   name: string;
   bank: Big;
   owner: string;
-  players: { [key: string]: number };
+  player_pos: { [key: string]: number };
 }
 
-interface User {
+export interface User {
   games: string[];
 }
 
 export type Option<T> = null | T;
 
-type ContractResponse<T> = Promise<{
-  success: boolean;
-  message: Option<T>;
-  error: Option<Error>;
-}>;
+type SuccessRes<T> = {
+  success: true;
+  result: T;
+  error: null;
+};
+
+type ErrorRes = {
+  success: false;
+  result: null;
+  error: Error;
+};
+
+type ContractResponse<T> = Promise<SuccessRes<T> | ErrorRes>;
 
 export interface ViewMethods {
   /**
@@ -43,7 +51,11 @@ export interface ViewMethods {
 }
 
 export interface ChangeMethods {
-  create_game: ({ game_name }: { game_name: string }) => ContractResponse<Game>;
+  create_game: ({
+    game_name,
+  }: {
+    game_name: string;
+  }) => ContractResponse<String>;
   register_user: () => ContractResponse<User>;
   join_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
 }

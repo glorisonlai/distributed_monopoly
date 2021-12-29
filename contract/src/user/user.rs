@@ -11,4 +11,12 @@ impl User {
 	pub fn new() -> Self {
 		Self { games: vec![] }
 	}
+
+	pub fn add_game(&mut self, game_id: String) {
+		self.games.push(game_id);
+	}
+
+	pub fn get_games(&self) -> &Vec<String> {
+		&self.games
+	}
 }

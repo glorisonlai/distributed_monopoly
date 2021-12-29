@@ -28,8 +28,24 @@ setup_alloc!();
 #[serde(crate = "near_sdk::serde")]
 pub struct ReturnRes<T: Serialize> {
     success: bool,
+    result: Option<T>,
     error: Option<String>,
-    message: Option<T>,
+}
+
+fn return_result<T: Serialize>(result: T) -> ReturnRes<T> {
+    ReturnRes {
+        success: true,
+        result: Some(result),
+        error: None,
+    }
+}
+
+fn return_error<T: Serialize>(error: String) -> ReturnRes<T> {
+    ReturnRes {
+        success: false,
+        result: None,
+        error: Some(error),
+    }
 }
 
 #[derive(BorshSerialize, BorshStorageKey)]
@@ -61,42 +77,15 @@ impl Default for Contract {
 impl Contract {
     pub fn view_game(&self, game_id: String) -> ReturnRes<Game> {
         match self.games.get(&game_id) {
-            Some(game) => {
-                let account_id = env::signer_account_id();
-                env::log(
-                    format!(
-                        "Joining game '{}' for account '{}' with hash '{:?}'",
-                        game.name, account_id, game_id
-                    )
-                    .as_bytes(),
-                );
-                // self.games.insert(&game_id, &account_id);
-                ReturnRes::<Game> {
-                    success: true,
-                    message: Some(game),
-                    error: None,
-                }
-            }
-            None => ReturnRes::<Game> {
-                success: false,
-                error: Some("Game does not exist".to_string()),
-                message: None,
-            },
+            Some(game) => return_result::<Game>(game),
+            None => return_error::<Game>("Game does not exist".to_string()),
         }
     }
 
     pub fn get_user(&self, account_id: String) -> ReturnRes<User> {
         match self.users.get(&account_id) {
-            Some(user) => ReturnRes {
-                success: true,
-                message: Some(user),
-                error: None,
-            },
-            None => ReturnRes {
-                success: false,
-                error: Some("User does not exist".to_string()),
-                message: None,
-            },
+            Some(user) => return_result::<User>(user),
+            None => return_error::<User>("User does not exist".to_string()),
         }
     }
 }
@@ -107,22 +96,14 @@ impl Contract {
     pub fn register_user(&mut self) -> ReturnRes<User> {
         let account_id = env::signer_account_id();
         match self.users.get(&account_id) {
-            Some(user) => {
+            Some(_) => {
                 env::log(format!("User '{}' already registered", account_id).as_bytes());
-                ReturnRes::<User> {
-                    success: false,
-                    error: Some("User already registered".to_string()),
-                    message: Some(user),
-                }
+                return_error("User already registered".to_string())
             }
             None => {
                 env::log(format!("Registering user '{}'", account_id).as_bytes());
                 self.users.insert(&account_id, &User::new());
-                ReturnRes::<User> {
-                    success: true,
-                    message: Some(self.users.get(&account_id).unwrap()),
-                    error: None,
-                }
+                return_result(self.users.get(&account_id).unwrap())
             }
         }
     }
@@ -132,27 +113,22 @@ impl Contract {
         let creator_id = env::signer_account_id();
         let game_bank = 0;
         // let game_bank = env::attached_deposit();
-        if self.user_exists(&creator_id) {
-            let game_id = format!("{}-{}", creator_id, env::block_timestamp());
-            env::log(
-                format!(
-                    "Creating game '{}' for account '{}' with hash '{}'",
-                    game_name, creator_id, game_id
-                )
-                .as_bytes(),
-            );
-            self.games.insert(
-                &game_id,
-                &Game::new(game_id.clone(), game_name, game_bank, creator_id),
-            );
-            self.join_game(game_id.clone())
-        } else {
-            ReturnRes::<Game> {
-                success: false,
-                error: Some("User does not exist".to_string()),
-                message: None,
-            }
+        if !self.user_exists(&creator_id) {
+            return return_error("User does not exist".to_string());
         }
+        let game_id = format!("{}-{}", creator_id, env::block_timestamp());
+        env::log(
+            format!(
+                "Creating game '{}' for account '{}' with hash '{}'",
+                game_name, creator_id, game_id
+            )
+            .as_bytes(),
+        );
+        self.games.insert(
+            &game_id,
+            &Game::new(game_id.clone(), game_name, game_bank, creator_id.clone()),
+        );
+        self.join_game(game_id)
     }
 
     pub fn join_game(&mut self, game_id: String) -> ReturnRes<Game> {
@@ -162,32 +138,24 @@ impl Contract {
                 Some(mut user) => {
                     env::log(
                         format!(
-                            "Joining game '{}' for account '{}' with hash '{:?}'",
+                            "Joining game '{}' for account '{}' with hash '{}'",
                             game.name, account_id, game_id
                         )
                         .as_bytes(),
                     );
+                    env::log(format!("{}", game_id).as_bytes());
                     if !game.player_pos.get(&account_id).is_some() {
                         game.player_pos.insert(&account_id, &0);
-                        user.games.push(game_id.clone());
+                        self.games.insert(&game_id, &game);
+                        // user.add_game(game_id);
+                        user.games.push(game_id);
+                        self.users.insert(&account_id, &user);
                     }
-                    return ReturnRes::<Game> {
-                        success: true,
-                        message: Some(game),
-                        error: None,
-                    };
+                    return_result(game)
                 }
-                None => ReturnRes::<Game> {
-                    success: false,
-                    error: Some("User does not exist".to_string()),
-                    message: None,
-                },
+                None => return_error("User does not exist".to_string()),
             },
-            None => ReturnRes::<Game> {
-                success: false,
-                error: Some("Game does not exist".to_string()),
-                message: None,
-            },
+            None => return_error("Game does not exist".to_string()),
         }
     }
 }
@@ -238,27 +206,28 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn set_then_get_greeting() {
-    //     let context = get_context(vec![], false);
-    //     testing_env!(context);
-    //     let mut contract = Contract::default();
-    //     contract.set_greeting("howdy".to_string());
-    //     assert_eq!(
-    //         "howdy".to_string(),
-    //         contract.get_greeting("bob_near".to_string())
-    //     );
-    // }
+    #[test]
+    fn test_register_new_user() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = Contract::default();
+        contract.register_user();
+        assert!(contract.user_exists(&env::signer_account_id()));
+        assert_eq!(true, contract.get_user(env::signer_account_id()).success);
+        assert!(contract
+            .get_user(env::signer_account_id())
+            .result
+            .unwrap()
+            .get_games()
+            .is_empty());
+    }
 
-    // #[test]
-    // fn get_default_greeting() {
-    //     let context = get_context(vec![], true);
-    //     testing_env!(context);
-    //     let contract = Contract::default();
-    //     // this test did not call set_greeting so should return the default "Hello" greeting
-    //     assert_eq!(
-    //         "Hello".to_string(),
-    //         contract.get_greeting("francis.near".to_string())
-    //     );
-    // }
+    #[test]
+    fn get_unregistered_user() {
+        let context = get_context(vec![], true);
+        testing_env!(context);
+        let contract = Contract::default();
+        // this test did not call set_greeting so should return the default "Hello" greeting
+        assert_eq!(false, contract.user_exists(&env::signer_account_id()));
+    }
 }

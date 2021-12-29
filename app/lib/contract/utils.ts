@@ -45,7 +45,7 @@ export const logout = (walletConnection: WalletConnection): boolean => {
   if (!walletConnection.isSignedIn()) return false;
   walletConnection.signOut();
   // reload page
-  window.location.replace(window.location.origin + window.location.pathname);
+  window.location.replace(window.location.origin);
   return true;
 };
 
@@ -57,7 +57,7 @@ export const login = (walletConnection: WalletConnection): boolean => {
   // the private key in localStorage.
   walletConnection.requestSignIn({
     contractId: nearConfig.contractName,
-    successUrl: `${window.location.origin}/wallet`,
+    successUrl: `${window.location.origin}/game`,
   });
   return true;
 };

@@ -3,25 +3,30 @@ import type { AppProps } from "next/app";
 import ContractContext from "../lib/context/contractProvider";
 import { useContract } from "../lib/hooks/useContract";
 import NavBar from "../components/common/NavBar";
-import Spinny from "../components/house/scene";
+import Scene from "../components/house/scene";
+import { Box } from "../components/house/examples";
 import Background from "../components/common/Bg";
+import Footer from "../components/common/Footer";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const contract = useContract();
 
-  return contract ? (
-    <ContractContext.Provider value={contract}>
-      <NavBar />
-      <Component {...pageProps} />
-    </ContractContext.Provider>
-  ) : (
-    <Background
-      title="Capitalism"
-      description="Loading"
-      favicon="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>"
-    >
-      <Spinny />
-    </Background>
+  return (
+    <div className="flex min-h-screen h-full flex-col">
+      {contract ? (
+        <ContractContext.Provider value={contract}>
+          <NavBar />
+          <Component {...pageProps} />
+          <Footer />
+        </ContractContext.Provider>
+      ) : (
+        <Background description="Loading...">
+          <Scene>
+            <Box />
+          </Scene>
+        </Background>
+      )}
+    </div>
   );
 };
 
