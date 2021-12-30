@@ -17,15 +17,13 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
   console.log(currentUser);
 
   const GameActionMenu = () => {
-    const [roll, setRoll] = useState(2);
+    const [roll, setRoll] = useState(0);
     const yourTurn = false;
 
     const rollDice = async () => {
       console.log("rolling");
       const res = await contract.roll_dice({ game_id: game.id });
-      if (res.success) {
-        setRoll(res.result);
-      } else {
+      if (!res.success) {
         console.error(res.error);
       }
     };

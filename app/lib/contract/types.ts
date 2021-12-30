@@ -20,10 +20,23 @@ export interface Game {
   bank: Big;
   owner: string;
   player_pos: { [key: string]: number };
+  player_queue: string[];
+  occupied_land: { [key: number]: string };
+}
+
+export interface House {
+  id: string;
+  game_id: string;
+  name: string;
+  price: Big;
+  purchase_history: string[];
+  code: string;
 }
 
 export interface User {
+  id: string;
   games: string[];
+  // houses: string[];
 }
 
 export type Option<T> = null | T;
@@ -47,17 +60,25 @@ export interface ViewMethods {
    * Returns user object
    */
   get_user: ({ account_id }: { account_id: string }) => ContractResponse<User>;
-  view_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  get_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  get_house: ({ house_id }: { house_id: string }) => ContractResponse<House>;
 }
 
 export interface ChangeMethods {
-  create_game: ({
-    game_name,
-  }: {
-    game_name: string;
-  }) => ContractResponse<String>;
   register_user: () => ContractResponse<User>;
+  create_game: ({ game_name }: { game_name: string }) => ContractResponse<Game>;
   join_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  leave_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  roll_dice: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  buy_land: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
+  buy_house: ({ house_id }: { house_id: string }) => ContractResponse<House>;
+  renovate_house: ({
+    house_id,
+    code,
+  }: {
+    house_id: string;
+    code: string;
+  }) => ContractResponse<House>;
 }
 
 export type ContractMethods = {

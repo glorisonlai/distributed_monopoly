@@ -16,7 +16,7 @@ const GamePage = () => {
   useEffect(() => {
     (async () => {
       if (typeof game_id !== "string") return;
-      const response = await contract.view_game({ game_id });
+      const response = await contract.get_game({ game_id });
       if (response.success) {
         setGame(response.result);
       } else {

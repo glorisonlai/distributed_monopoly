@@ -18,6 +18,7 @@ const GameLobby = () => {
   useEffect(() => {
     (async () => {
       if (!currentUser?.accountId) return;
+      console.log(contract);
       contract.get_user({ account_id: currentUser.accountId }).then((res) => {
         console.log(res);
         if (res.success) {
@@ -34,7 +35,7 @@ const GameLobby = () => {
     user &&
       (async () => {
         Promise.all(
-          user.games.map((gameId) => contract.view_game({ game_id: gameId }))
+          user.games.map((gameId) => contract.get_game({ game_id: gameId }))
         ).then((games) =>
           setRecentGames(
             games
@@ -132,7 +133,7 @@ const GameLobby = () => {
     const searchGame = async (e: FormEvent) => {
       e.preventDefault();
       console.log("Searching game...");
-      const res = await contract.view_game({
+      const res = await contract.get_game({
         game_id: formFields.gameId,
       });
       if (res.success) {
