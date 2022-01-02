@@ -17,6 +17,8 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
     return <div>You must be logged in to play!</div>;
   }
 
+  const isPlaying = currentUser.accountId in game.player_pos;
+
   const GameActionMenu = () => {
     const [roll, setRoll] = useState(0);
     const yourTurn = game.player_queue.findIndex(
@@ -72,7 +74,11 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
             Join Game
           </button>
         )}
-        <House houseId={game.occupied_land[position]} gameId={game.id} />
+        <House
+          houseId={game.occupied_land[position]}
+          gameId={game.id}
+          playerOnHouse={game.player_pos[currentUser.accountId] === position}
+        />
         <Gamemap
           className="absolute bottom-4 left-4"
           playerPos={game.player_pos[currentUser.accountId]}
