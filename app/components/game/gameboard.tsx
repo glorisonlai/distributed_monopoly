@@ -1,5 +1,6 @@
 import { FC, useContext, useState } from "react";
-import { Game } from "../../lib/contract/types";
+import type { Game } from "../../lib/contract/types";
+import House from "./house";
 import Scene from "../common/Scene";
 import { Box, Mess, Triangle } from "./examples";
 import Gamemap from "./gamemap";
@@ -9,16 +10,18 @@ import Sidemenu from "../common/Sidemenu";
 
 const Gameboard: FC<{ game: Game }> = ({ game }) => {
   const { currentUser, contract } = useContext(ContractContext);
+  const [position, setPosition] = useState(
+    currentUser.accountId ? game.player_pos[currentUser.accountId] || 0 : 0
+  );
   if (!currentUser?.accountId) {
     return <div>You must be logged in to play!</div>;
   }
 
-  console.log(game);
-  console.log(currentUser);
-
   const GameActionMenu = () => {
     const [roll, setRoll] = useState(0);
-    const yourTurn = false;
+    const yourTurn = game.player_queue.findIndex(
+      (p) => p === currentUser.accountId
+    );
 
     const rollDice = async () => {
       console.log("rolling");
@@ -37,7 +40,7 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
           Leave Game
         </button>
         <div className="absolute w-full flex flex-col items-center text-white z-40">
-          {yourTurn ? (
+          {yourTurn === 0 ? (
             <button
               className="w-10 h-10 rounded-full flex justify-center items-center border-2 cursor-pointer"
               onClick={rollDice}
@@ -46,9 +49,9 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
             </button>
           ) : (
             <div className="font-bold text-lg">
-              <div className="flex flex-row">First Person</div>
+              <div className="flex flex-row">1: {game.player_queue[0]}</div>
               <hr className="divide-x-4" />
-              <div className="flex flex-row">YOU</div>
+              <p className="">{yourTurn + 1}: You</p>
             </div>
           )}
         </div>
@@ -56,38 +59,29 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
     );
   };
 
-  const HouseDeetsMenu = () => (
-    <div className="absolute h-full right-0 flex flex-col justify-center text-white z-40">
-      <Sidemenu>
-        <h1>House innit</h1>
-      </Sidemenu>
-    </div>
-  );
-
   return (
-    <div className="flex flex-auto">
-      <div className="relative w-full max-w-screen-2xl">
-        <HouseDeetsMenu />
+    <main className="flex flex-auto">
+      <div className="relative w-full">
         {game.player_pos.hasOwnProperty(currentUser.accountId) ? (
           <GameActionMenu />
         ) : (
           <button
-            className="absolute p-2 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50"
+            className="absolute p-2 left-4 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50"
             onClick={() => contract.join_game({ game_id: game.id })}
           >
             Join Game
           </button>
         )}
-        <Scene bgColor={["black"]}>
-          <Triangle />
-        </Scene>
+        <House houseId={game.occupied_land[position]} gameId={game.id} />
         <Gamemap
           className="absolute bottom-4 left-4"
-          position={game.player_pos[currentUser.accountId]}
-          houses={{ 1: "blah" }}
+          playerPos={game.player_pos[currentUser.accountId]}
+          position={position}
+          houses={game.occupied_land}
+          moveTo={setPosition}
         />
       </div>
-    </div>
+    </main>
   );
 };
 export default Gameboard;

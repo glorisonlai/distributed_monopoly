@@ -29,7 +29,14 @@ const GamePage = () => {
   return (
     <Background title={game ? game.name : "Game"} description={"Game innit"}>
       {error ? (
-        <div>Error: {error}</div>
+        <div className="text-white font-bold flex flex-col w-full justify-center items-center">
+          Error: {error}
+          <Link href="/game" passHref={true}>
+            <button className="rounded p-2 border-2 mt-4 border-white hover:bg-gray-800">
+              Back to Lobby
+            </button>
+          </Link>
+        </div>
       ) : game ? (
         <Gameboard game={game} />
       ) : (

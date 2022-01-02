@@ -1,6 +1,14 @@
 import { MeshProps, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
-import { CameraShake, Line, Reflector, useTexture } from "@react-three/drei";
+import {
+  CameraShake,
+  Line,
+  Reflector,
+  useTexture,
+  Billboard,
+  Plane,
+  Text,
+} from "@react-three/drei";
 import {
   BufferAttribute,
   BufferGeometry,
@@ -12,6 +20,7 @@ import { Mesh, Vector3 } from "three";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
+import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
 
 export const Box = (props: MeshProps) => {
@@ -116,6 +125,27 @@ export const Mess = (props: MeshProps) => {
   );
 };
 
+const Ground = (props: MeshReflectorMaterialProps) => {
+  const [floor, normal] = useTexture([
+    "/SurfaceImperfections003_1K_var1.jpg",
+    "/SurfaceImperfections003_1K_Normal.jpg",
+  ]);
+  return (
+    <Reflector resolution={1024} args={[8, 8]} {...props}>
+      {(Material, props) => (
+        <Material
+          color="#f0f0f0"
+          metalness={0}
+          roughnessMap={floor}
+          normalMap={normal}
+          normalScale={[2, 2]}
+          {...props}
+        />
+      )}
+    </Reflector>
+  );
+};
+
 export const Triangle = () => {
   const Triangle = ({ color, ...props }: MeshProps & { color: string }) => {
     const ref = useRef<Mesh>(null!);
@@ -156,83 +186,53 @@ export const Triangle = () => {
         0.1
       );
     });
+
     return <group ref={ref}>{children}</group>;
   };
 
-  function Ground(props: MeshReflectorMaterialProps) {
-    const [floor, normal] = useTexture([
-      "/SurfaceImperfections003_1K_var1.jpg",
-      "/SurfaceImperfections003_1K_Normal.jpg",
-    ]);
-    return (
-      <Reflector resolution={1024} args={[8, 8]} {...props}>
-        {(Material, props) => (
-          <Material
-            color="#f0f0f0"
-            metalness={0}
-            roughnessMap={floor}
-            normalMap={normal}
-            normalScale={[2, 2]}
-            {...props}
-          />
-        )}
-      </Reflector>
-    );
-  }
   return (
     <>
-      <Rig>
-        <Triangle
-          color="#ff2060"
-          scale={0.009}
-          rotation={[0, 0, Math.PI / 3]}
-        />
-        <Triangle
-          color="cyan"
-          scale={0.009}
-          position={[2, 0, -2]}
-          rotation={[0, 0, Math.PI / 3]}
-        />
-        <Triangle
-          color="orange"
-          scale={0.009}
-          position={[-2, 0, -2]}
-          rotation={[0, 0, Math.PI / 3]}
-        />
-        <Triangle
-          color="white"
-          scale={0.009}
-          position={[0, 2, -10]}
-          rotation={[0, 0, Math.PI / 3]}
-        />
-        <Ground
-          mirror={1}
-          blur={[500, 100]}
-          mixBlur={12}
-          mixStrength={1.5}
-          rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-          position-y={-0.8}
-        />
-      </Rig>
-      <EffectComposer multisampling={8}>
-        <Bloom
-          kernelSize={3}
-          luminanceThreshold={0}
-          luminanceSmoothing={0.4}
-          intensity={0.6}
-        />
-        <Bloom
-          kernelSize={KernelSize.HUGE}
-          luminanceThreshold={0}
-          luminanceSmoothing={0}
-          intensity={0.5}
-        />
-      </EffectComposer>
-      <CameraShake
-        yawFrequency={0.2}
-        pitchFrequency={0.2}
-        rollFrequency={0.2}
+      <Triangle color="#ff2060" scale={0.009} rotation={[0, 0, Math.PI / 3]} />
+      <Triangle
+        color="cyan"
+        scale={0.009}
+        position={[2, 0, -2]}
+        rotation={[0, 0, Math.PI / 3]}
+      />
+      <Triangle
+        color="orange"
+        scale={0.009}
+        position={[-2, 0, -2]}
+        rotation={[0, 0, Math.PI / 3]}
+      />
+      <Triangle
+        color="white"
+        scale={0.009}
+        position={[0, 2, -10]}
+        rotation={[0, 0, Math.PI / 3]}
       />
     </>
+  );
+};
+
+export const FloatingText: FC<{ size: number; color: string; text: string }> =
+  ({ size, color, text }) => {
+    const ref = useRef<Mesh>(null!);
+    return (
+      <mesh ref={ref} scale={[size, size, size] /*width, height, depth*/}>
+        <Text color={color} anchorX="center" anchorY="middle">
+          {text}
+        </Text>
+      </mesh>
+    );
+  };
+
+export const Sign: FC<{ url: string }> = ({ url }) => {
+  const mesh = useRef<Mesh>(null!);
+  const texture = useLoader(THREE.TextureLoader, url);
+  return (
+    <Plane ref={mesh} scale={[3, 3, 0]}>
+      <meshBasicMaterial attach="material" map={texture} />
+    </Plane>
   );
 };

@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 const Dice: FC<{ roll: number }> = ({ roll }) => {
   const [rando, setRando] = useState(1);
   useEffect(() => {
-    if (roll <= 0) return;
+    if (roll) return;
 
     const rolling = window.setInterval(() => {
       setRando(Math.floor(Math.random() * 6) + 1);

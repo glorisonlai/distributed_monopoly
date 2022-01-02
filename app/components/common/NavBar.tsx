@@ -87,7 +87,7 @@ const NavBar = () => {
           </Link>
           {walletConnection.isSignedIn() && (
             <Link href="/game" passHref={true}>
-              <button className=" ml-8 p-2 text-white text-xl cursor-pointer border-2 outline-white hover:bg-gray-800">
+              <button className=" ml-8 p-2 rounded text-white text-xl cursor-pointer border-2 outline-white hover:bg-gray-800">
                 Game Lobby
               </button>
             </Link>

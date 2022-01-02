@@ -52,13 +52,13 @@ const GameLobby = () => {
   };
 
   const RecentGameMenu: FC<{ recentGames: Game[] }> = ({ recentGames }) => (
-    <div className="flex flex-col text-white rounded border-[1px] p-4">
+    <div className="flex flex-col text-white rounded border-[1px] p-4 w-96">
       <h1 className="font-bold text-2xl">Recent Games</h1>
       <div className="h-[600px] overflow-auto">
         {recentGames.length ? (
-          recentGames.map((game) => (
+          recentGames.map((game, i) => (
             <>
-              <hr className="divide-y-2 mt-2" />
+              <hr key={i} className="divide-y-2 mt-2" />
               <Link key={game.id} href={`/game/${game.id}`} passHref={true}>
                 <div className="flex cursor-pointer hover:bg-slate-800 p-2">
                   <div className="flex flex-col">
@@ -71,8 +71,9 @@ const GameLobby = () => {
           ))
         ) : (
           <>
-            <h3>Nothing to see here!</h3>
-            <h4>Try creating a new game!</h4>
+            <hr className="divide-y-2 my-2" />
+            <h3 className="text-xl">Nothing to see here!</h3>
+            <h4 className="text-gray-300">Try creating a new game</h4>
           </>
         )}
       </div>
@@ -169,11 +170,14 @@ const GameLobby = () => {
           </button>
           <button
             className={`w-full ${
-              screenId === Screens.createGame
+              !user
+                ? "bg-gray-800 cursor-not-allowed"
+                : screenId === Screens.createGame
                 ? "bg-gray-700 cursor-default"
                 : "bg-gray-800 hover:bg-gray-900"
             } font-bold py-2 px-4 rounded`}
             onClick={() => setScreenId(Screens.createGame)}
+            disabled={!user}
           >
             {Screens.createGame}
           </button>

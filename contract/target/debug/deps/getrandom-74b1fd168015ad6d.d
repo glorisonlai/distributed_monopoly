@@ -1,0 +1,11 @@
+D:\GitHub\distributed_monopoly\contract\target\debug\deps\getrandom-74b1fd168015ad6d.rmeta: C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\lib.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\util.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error_impls.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\windows.rs
+
+D:\GitHub\distributed_monopoly\contract\target\debug\deps\libgetrandom-74b1fd168015ad6d.rlib: C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\lib.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\util.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error_impls.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\windows.rs
+
+D:\GitHub\distributed_monopoly\contract\target\debug\deps\getrandom-74b1fd168015ad6d.d: C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\lib.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\util.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error_impls.rs C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\windows.rs
+
+C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\lib.rs:
+C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error.rs:
+C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\util.rs:
+C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\error_impls.rs:
+C:\Users\Glorison\ Lai\.cargo\registry\src\github.com-1ecc6299db9ec823\getrandom-0.2.3\src\windows.rs:

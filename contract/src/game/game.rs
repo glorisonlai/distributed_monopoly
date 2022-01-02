@@ -92,6 +92,7 @@ pub struct Game {
 	player_pos: MyUnorderedMap<String, u8>,
 	player_queue: PlayerQueue,
 	occupied_land: MyUnorderedMap<u8, String>,
+	dimensions: (u8, u8),
 }
 
 impl<K, V> Serialize for MyUnorderedMap<K, V>
@@ -134,6 +135,7 @@ impl Game {
 			player_pos: MyUnorderedMap::new(GameStorageKeys::PlayerPos),
 			player_queue: PlayerQueue::new(GameStorageKeys::PlayerQueue), // TODO: implement dequeue, tho getting player takes o(n) anyway
 			occupied_land: MyUnorderedMap::new(GameStorageKeys::HousePos),
+			dimensions: (9, 5),
 		}
 	}
 
@@ -166,8 +168,13 @@ impl Game {
 		}
 	}
 
+	fn get_num_tiles(&self) -> u8 {
+		2 * self.dimensions.0 + 2 * self.dimensions.1 - 4
+	}
+
 	pub fn move_player(&mut self, player_id: &String, new_pos: u8) {
-		self.player_pos.insert(player_id, &new_pos);
+		self.player_pos
+			.insert(player_id, &(new_pos % self.get_num_tiles()));
 	}
 
 	pub fn get_occupied_land(&self) -> &MyUnorderedMap<u8, String> {

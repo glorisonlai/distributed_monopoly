@@ -14,13 +14,15 @@ const Footer = () => {
         <div className="flex flex-row items-center py-1">
           <Link
             href="https://github.com/glorisonlai/distributed_monopoly"
-            passHref={false}
+            passHref={true}
           >
-            <GoMarkGithub
-              size={"2rem"}
-              className="cursor-pointer"
-              color={"white"}
-            />
+            <>
+              <GoMarkGithub
+                size={"2rem"}
+                className="cursor-pointer"
+                color={"white"}
+              />
+            </>
           </Link>
           <div className="w-3" />
           <Link

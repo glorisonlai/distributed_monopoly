@@ -21,7 +21,7 @@ use near_sdk::collections::LookupMap;
 use near_sdk::serde::Serialize;
 use near_sdk::BorshStorageKey;
 use near_sdk::{env, near_bindgen, setup_alloc};
-use rand::prelude::*;
+// use rand::prelude::*;
 use user::user::User;
 
 setup_alloc!();
@@ -214,7 +214,7 @@ impl Contract {
                     }
                     match game.get_player_pos(user.get_id()) {
                         Some(player_pos) => {
-                            let roll = rand::thread_rng().gen_range(1..=6);
+                            let roll = (env::block_timestamp() % 6 + 1) as u8;
                             game.move_player(user.get_id(), player_pos + roll);
                             self.games.insert(&game_id, &game);
                             return_result(game)
