@@ -9,7 +9,6 @@ import Link from "next/link";
 
 const Home: NextPage = () => {
   const { walletConnection } = useContext(ContractContext);
-  console.log(walletConnection);
   return (
     <Background
       title={"Capitalism innit"}
@@ -17,7 +16,7 @@ const Home: NextPage = () => {
     >
       <main className="bg-gray-700 text-center flex flex-auto">
         <div className="relative w-full">
-          <Scene bgColor={["black"]}>
+          <Scene bgColor={["black"]} showBlur={true}>
             <Triangle />
           </Scene>
           <button className="absolute top-1/2 w-full p-4 text-2xl font-bold flex flex-row justify-center bg-black hover:opacity-100 text-white opacity-90">

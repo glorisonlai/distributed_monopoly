@@ -10,8 +10,6 @@ const NavBar = () => {
   const { walletConnection, currentUser, nearConfig, contract } =
     useContext(ContractContext);
 
-  console.log(contract.contractId);
-
   const UserMenu = () => (
     <div className="flex flex-col text-white items-stretch">
       <Menu>

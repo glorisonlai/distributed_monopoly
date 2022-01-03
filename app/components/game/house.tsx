@@ -1,40 +1,32 @@
-import {
-  ReactElement,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import ContractContext from "../../lib/context/contractProvider";
 import { House } from "../../lib/contract/types";
 import { Option } from "../../lib/contract/types";
 import Sidemenu from "../common/Sidemenu";
 import type { FC } from "react";
 import Scene from "../common/Scene";
-import { FloatingText, Triangle, Sign } from "./examples";
-import { useGLTF } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Sign } from "./examples";
 import useMediaQuery from "../../lib/hooks/useMediaQuery";
 import Link from "next/link";
-// import { useGLTF } from "@react-three/drei";
-// import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import { BOATLOAD_OF_GAS } from "../../lib/contract/utils";
+import Big from "big.js";
+import GLTFParser from "../common/GLTFParser";
+import { Html } from "@react-three/drei";
+import RemoteGLTFLoader from "../common/GLTFLoader";
+import ErrorBoundary from "../common/ErrorBoundary";
 
 const House: FC<{ houseId?: string; gameId: string; playerOnHouse: boolean }> =
   ({ houseId, gameId, playerOnHouse }) => {
     const { contract, currentUser } = useContext(ContractContext);
     const [house, setHouse] = useState<Option<House>>(null);
-    const code = useRef("");
 
     useEffect(() => {
       (async () => {
         if (!houseId) return;
         const res = await contract.get_house({ house_id: houseId });
         if (res.success) {
+          console.log(res.result);
           setHouse(res.result);
-          code.current = res.result.code;
         } else {
           console.error(res.error);
         }
@@ -46,8 +38,13 @@ const House: FC<{ houseId?: string; gameId: string; playerOnHouse: boolean }> =
         console.error("Theres already a house here");
         return;
       }
-      console.log("Buying land");
-      const res = await contract.buy_land({ game_id: gameId });
+      const res = await contract.buy_land(
+        { game_id: gameId },
+        BOATLOAD_OF_GAS,
+        Big("200")
+          .times(10 * 24)
+          .toFixed()
+      );
       if (!res.success) {
         console.error(res.error);
       }
@@ -58,7 +55,6 @@ const House: FC<{ houseId?: string; gameId: string; playerOnHouse: boolean }> =
         console.error("No house here!");
         return;
       }
-      console.log("Buying house");
       const res = await contract.buy_house({ house_id: houseId });
       if (!res.success) {
         console.error(res.error);
@@ -69,37 +65,37 @@ const House: FC<{ houseId?: string; gameId: string; playerOnHouse: boolean }> =
       children,
     }) => {
       const renderCollapsibleMenu = useMediaQuery(1400);
-      console.log(renderCollapsibleMenu);
 
       return renderCollapsibleMenu ? <Sidemenu>{children}</Sidemenu> : children;
     };
 
     const BuyHouseScreen: FC<{ house: House }> = ({ house }) => (
-      <div className="">
-        <h1>{house.name}</h1>
-        <h2>
-          Owned by {house.purchase_history[house.purchase_history.length - 1]}
-        </h2>
-        <h2>Purchase Price: {house.price}N</h2>
-        {playerOnHouse && (
-          <button
-            className="absolute p-2 left-4 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50"
-            onClick={buyHouse}
-          >
-            Buy House
-          </button>
-        )}
-        {currentUser.accountId ===
-          house.purchase_history[house.purchase_history.length - 1] && (
-          <Link href={`/house/edit/${house.id}`}>
-            <button className="absolute p-2 left-4 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50">
+      <div className="relative text-white p-2">
+        <h1 className="font-bold">{house.name}</h1>
+        <br />
+        <h2>Owned by {house.purchase_history.at(-1)}</h2>
+        <br />
+        <h2>Purchase Price: {house.price}Ⓝ</h2>
+        {playerOnHouse &&
+          currentUser.accountId !== house.purchase_history.at(-1) && (
+            <button
+              className="p-2 left-4 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50 m-4"
+              onClick={buyHouse}
+            >
+              Buy House
+            </button>
+          )}
+        {currentUser.accountId === house.purchase_history.at(-1) && (
+          <Link href={`/house/edit/${house.id}`} passHref={true}>
+            <button className="p-2 left-4 top-4 text-white rounded bg-green-300 hover:bg-green-400 z-50 m-4">
               Edit House
             </button>
           </Link>
         )}
+        <br />
         <hr className="divide-x-2" />
         <div>
-          <h2>Purchase History</h2>
+          <h2 className="font-bold">Purchase History</h2>
           {house.purchase_history.map((buyer, i) => (
             <div key={i} className="flex">
               <p>{buyer}</p>
@@ -117,40 +113,30 @@ const House: FC<{ houseId?: string; gameId: string; playerOnHouse: boolean }> =
             className="p-2 mt-4 text-white rounded bg-green-300 hover:bg-green-400 z-50 center"
             onClick={buyLand}
           >
-            Buy Land (200N)
+            Buy Land (200Ⓝ)
           </button>
         )}
       </div>
     );
 
-    const GLTF = () => {
-      const gltf = useLoader(GLTFLoader, "/scenecopy.gltf");
-      return <primitive object={gltf.scene} />;
-    };
-
     return (
       <div className="w-full h-full flex flex-row">
         {!houseId ? (
-          <Scene
-            bgColor={["black"]}
-            exportTo={code}
-            showGround={false}
-            showBlur={false}
-          >
+          <Scene bgColor={["black"]} showGround={false} showBlur={false}>
             <Sign url="/dumbjoke.jpg" />{" "}
           </Scene>
         ) : (
-          <Scene
-            bgColor={["black"]}
-            exportTo={code}
-            showGround={true}
-            showBlur={true}
-          >
-            {/* {!houseId ? <Sign url="/dumbjoke.jpg" /> : <Triangle />} */}
-            <GLTF />
-            {/* <Triangle /> */}
-            {/* <Sign url="/dumbjoke.jpg" /> */}
-          </Scene>
+          <ErrorBoundary>
+            <Scene bgColor={["black"]} showGround={true} showBlur={true}>
+              {house?.code ? (
+                <RemoteGLTFLoader code={house.code} />
+              ) : (
+                <Html className="text-white font-bold" center>
+                  No code here!
+                </Html>
+              )}
+            </Scene>
+          </ErrorBoundary>
         )}
         <HouseDeetsMenu>
           <div className="relative w-60">

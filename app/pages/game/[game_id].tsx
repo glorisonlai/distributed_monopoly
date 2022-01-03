@@ -19,12 +19,13 @@ const GamePage = () => {
       const response = await contract.get_game({ game_id });
       if (response.success) {
         setGame(response.result);
+        setError(null);
       } else {
         setError(response.error);
+        setGame(null);
       }
     })();
   }, [game_id, contract]);
-  console.log("game", game);
 
   return (
     <Background title={game ? game.name : "Game"} description={"Game innit"}>

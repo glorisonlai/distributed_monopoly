@@ -55,30 +55,30 @@ type ErrorRes = {
 
 type ContractResponse<T> = Promise<SuccessRes<T> | ErrorRes>;
 
+type ContractMethod<A, T> = (
+  args: A,
+  gas?: string,
+  deposit?: string
+) => ContractResponse<T>;
+
 export interface ViewMethods {
   /**
    * Returns user object
    */
-  get_user: ({ account_id }: { account_id: string }) => ContractResponse<User>;
-  get_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
-  get_house: ({ house_id }: { house_id: string }) => ContractResponse<House>;
+  get_user: ContractMethod<{ account_id: string }, User>;
+  get_game: ContractMethod<{ game_id: string }, Game>;
+  get_house: ContractMethod<{ house_id: string }, House>;
 }
 
 export interface ChangeMethods {
-  register_user: () => ContractResponse<User>;
-  create_game: ({ game_name }: { game_name: string }) => ContractResponse<Game>;
-  join_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
-  leave_game: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
-  roll_dice: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
-  buy_land: ({ game_id }: { game_id: string }) => ContractResponse<Game>;
-  buy_house: ({ house_id }: { house_id: string }) => ContractResponse<House>;
-  renovate_house: ({
-    house_id,
-    code,
-  }: {
-    house_id: string;
-    code: string;
-  }) => ContractResponse<House>;
+  register_user: ContractMethod<undefined, Game>;
+  create_game: ContractMethod<{ game_name: string }, Game>;
+  join_game: ContractMethod<{ game_id: string }, Game>;
+  leave_game: ContractMethod<{ game_id: string }, Game>;
+  roll_dice: ContractMethod<{ game_id: string }, Game>;
+  buy_land: ContractMethod<{ game_id: string }, Game>;
+  buy_house: ContractMethod<{ house_id: string }, House>;
+  renovate_house: ContractMethod<{ house_id: string; code: string }, House>;
 }
 
 export type ContractMethods = {

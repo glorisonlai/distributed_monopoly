@@ -1,3 +1,4 @@
+import Big from "big.js";
 import { connect, Contract, keyStores, WalletConnection } from "near-api-js";
 import getConfig from "./config";
 import type { ContractMethods, ViewMethods, ChangeMethods } from "./types";
@@ -70,3 +71,7 @@ export const login = (walletConnection: WalletConnection): boolean => {
   });
   return true;
 };
+
+export const BOATLOAD_OF_GAS = Big(3)
+  .times(10 ** 13)
+  .toFixed();

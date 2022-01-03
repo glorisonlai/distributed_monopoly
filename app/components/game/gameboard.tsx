@@ -1,12 +1,9 @@
 import { FC, useContext, useState } from "react";
 import type { Game } from "../../lib/contract/types";
 import House from "./house";
-import Scene from "../common/Scene";
-import { Box, Mess, Triangle } from "./examples";
 import Gamemap from "./gamemap";
 import ContractContext from "../../lib/context/contractProvider";
 import Dice from "./dice";
-import Sidemenu from "../common/Sidemenu";
 
 const Gameboard: FC<{ game: Game }> = ({ game }) => {
   const { currentUser, contract } = useContext(ContractContext);
@@ -26,7 +23,6 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
     );
 
     const rollDice = async () => {
-      console.log("rolling");
       const res = await contract.roll_dice({ game_id: game.id });
       if (!res.success) {
         console.error(res.error);
@@ -44,10 +40,10 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
         <div className="absolute w-full flex flex-col items-center text-white z-40">
           {yourTurn === 0 ? (
             <button
-              className="w-10 h-10 rounded-full flex justify-center items-center border-2 cursor-pointer"
+              className="w-fit h-10 mt-4 p-2 rounded flex justify-center items-center border-2 cursor-pointer font-bold hover:bg-slate-700"
               onClick={rollDice}
             >
-              <Dice roll={roll} />
+              Roll to move!
             </button>
           ) : (
             <div className="font-bold text-lg">

@@ -12,7 +12,6 @@ const Popup: FC<{
   // const isOpen = true;
 
   // const setIsOpen = (_) => {};
-  console.log("isOpen", isOpen);
 
   const handleSubmit = () => {
     if (callBack) callBack();

@@ -18,16 +18,15 @@ const GameLobby = () => {
   useEffect(() => {
     (async () => {
       if (!currentUser?.accountId) return;
-      console.log(contract);
-      contract.get_user({ account_id: currentUser.accountId }).then((res) => {
-        console.log(res);
-        if (res.success) {
-          setUser(res.result);
-        } else {
-          console.error(res.error);
-        }
-        setLoading(false);
+      const res = await contract.get_user({
+        account_id: currentUser.accountId,
       });
+      if (res.success) {
+        setUser(res.result);
+      } else {
+        console.error(res.error);
+      }
+      setLoading(false);
     })();
   }, [contract, currentUser]);
 
@@ -48,7 +47,7 @@ const GameLobby = () => {
 
   const registerUser = async () => {
     console.log(`Registering user '${currentUser.accountId}'...`);
-    await contract.register_user();
+    await contract.register_user(undefined);
   };
 
   const RecentGameMenu: FC<{ recentGames: Game[] }> = ({ recentGames }) => (

@@ -110,7 +110,6 @@ app.post("/users", function (req, res) {
                     return [3 /*break*/, 4];
                 case 3:
                     error_2 = _b.sent();
-                    console.log(error_2);
                     res.status(500).json({ error: "Could not create user" });
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
