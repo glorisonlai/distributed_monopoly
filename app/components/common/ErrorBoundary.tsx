@@ -1,6 +1,8 @@
-import React, { GetDerivedStateFromError } from "react";
+import React from "react";
 
-class ErrorBoundary extends React.Component {
+type ErrorState = { hasError: boolean };
+
+class ErrorBoundary extends React.Component<{}, ErrorState> {
   constructor(props: React.ReactPropTypes) {
     super(props);
     this.state = { hasError: false };
