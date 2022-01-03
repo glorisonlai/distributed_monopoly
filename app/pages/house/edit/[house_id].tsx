@@ -25,6 +25,7 @@ const EditHouse = () => {
         if (res.result.purchase_history.at(-1) === currentUser.accountId) {
           codeSrc.current.value = res.result.code;
           const codeRes = await fetch(res.result.code);
+
           if (codeRes.status === 200) {
             const code = await codeRes.text();
             codeBox.current.value = code;
