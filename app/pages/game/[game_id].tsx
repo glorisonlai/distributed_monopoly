@@ -1,6 +1,7 @@
+import type { Option, Game, Error } from "../../lib/contract/types";
+
 import { useContext, useEffect, useState } from "react";
 import ContractContext from "../../lib/context/contractProvider";
-import { Option, Game, Error } from "../../lib/contract/types";
 import { useRouter } from "next/router";
 import Gameboard from "../../components/game/gameboard";
 import Background from "../../components/common/Bg";

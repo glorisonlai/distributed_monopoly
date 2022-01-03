@@ -1,11 +1,12 @@
 import type { Mesh } from "three";
 import type { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
+import type { FC, MutableRefObject } from "react";
+import type { ColorRepresentation } from "three";
 
 import { KernelSize } from "postprocessing";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { FC, MutableRefObject, Suspense, useEffect, useRef } from "react";
+import { Suspense, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ColorRepresentation } from "three";
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import {
@@ -46,13 +47,13 @@ const Scene: FC<{
       link.click();
     };
 
-    window.blah = () => {
+    window.export = () => {
       if (exportTo) {
         const exporter = new GLTFExporter();
         exporter.parse(
           mesh.current,
           (gltf) => {
-            window.blah = mesh.current;
+            window.export = mesh.current;
 
             const blob = new Blob([JSON.stringify(gltf)], {
               type: "text/plain",

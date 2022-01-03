@@ -1,16 +1,15 @@
-import { ReactElement, useContext, useEffect, useState } from "react";
+import type { FC, ReactElement } from "react";
+import type { Option, House } from "../../lib/contract/types";
+
+import { useContext, useEffect, useState } from "react";
 import ContractContext from "../../lib/context/contractProvider";
-import { House } from "../../lib/contract/types";
-import { Option } from "../../lib/contract/types";
 import Sidemenu from "../common/Sidemenu";
-import type { FC } from "react";
 import Scene from "../common/Scene";
 import { Sign } from "./examples";
 import useMediaQuery from "../../lib/hooks/useMediaQuery";
 import Link from "next/link";
 import { BOATLOAD_OF_GAS } from "../../lib/contract/utils";
 import Big from "big.js";
-import GLTFParser from "../common/GLTFParser";
 import { Html } from "@react-three/drei";
 import RemoteGLTFLoader from "../common/GLTFLoader";
 import ErrorBoundary from "../common/ErrorBoundary";

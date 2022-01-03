@@ -1,7 +1,9 @@
-import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import type { FC } from "react";
+import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
-import type { FC } from "react";
 
 const GLTFParser: FC<{ code?: string }> = ({ code }) => {
   const [parseGLTF, setParseGLTF] = useState<{

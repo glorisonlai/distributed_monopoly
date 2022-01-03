@@ -1,3 +1,5 @@
+import type { FC } from "react";
+
 import { useContext } from "react";
 import ContractContext from "../../lib/context/contractProvider";
 import { login, logout } from "../../lib/contract/utils";
@@ -6,7 +8,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { CgUserlane } from "react-icons/cg";
 import { IoMdArrowDropdown } from "react-icons/Io";
 
-const NavBar = () => {
+const NavBar: FC<{}> = () => {
   const { walletConnection, currentUser, nearConfig, contract } =
     useContext(ContractContext);
 

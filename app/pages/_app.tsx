@@ -1,5 +1,6 @@
-import "../styles/globals.css";
 import type { AppProps } from "next/app";
+
+import "../styles/globals.css";
 import ContractContext from "../lib/context/contractProvider";
 import { useContract } from "../lib/hooks/useContract";
 import NavBar from "../components/common/NavBar";

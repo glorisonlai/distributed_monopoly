@@ -1,5 +1,7 @@
-import { FC, useContext, useState } from "react";
+import type { FC } from "react";
 import type { Game } from "../../lib/contract/types";
+
+import { useContext, useState } from "react";
 import House from "./house";
 import Gamemap from "./gamemap";
 import ContractContext from "../../lib/context/contractProvider";
@@ -13,8 +15,6 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
   if (!currentUser?.accountId) {
     return <div>You must be logged in to play!</div>;
   }
-
-  const isPlaying = currentUser.accountId in game.player_pos;
 
   const GameActionMenu = () => {
     const [roll, setRoll] = useState(0);

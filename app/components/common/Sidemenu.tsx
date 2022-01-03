@@ -1,4 +1,5 @@
-import { FC } from "react";
+import type { FC } from "react";
+
 import { Disclosure, Transition } from "@headlessui/react";
 
 const Sidemenu: FC<{}> = ({ children }) => {

@@ -1,7 +1,8 @@
+import type { ContractMethods, ViewMethods, ChangeMethods } from "./types";
+
 import Big from "big.js";
 import { connect, Contract, keyStores, WalletConnection } from "near-api-js";
 import getConfig from "./config";
-import type { ContractMethods, ViewMethods, ChangeMethods } from "./types";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 

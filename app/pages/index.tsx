@@ -1,7 +1,8 @@
 import type { NextPage } from "next";
+
 import { useContext } from "react";
 import Scene from "../components/common/Scene";
-import { Box, FloatingText, Sign, Triangle } from "../components/game/examples";
+import { Triangle } from "../components/game/examples";
 import Background from "../components/common/Bg";
 import { login } from "../lib/contract/utils";
 import ContractContext from "../lib/context/contractProvider";

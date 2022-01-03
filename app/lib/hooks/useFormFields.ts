@@ -1,5 +1,6 @@
-import { useState } from "react";
 import type { ChangeEvent } from "react";
+
+import { useState } from "react";
 
 export const useFormFields = <T>(initialValues: T) => {
   const [formFields, setFormFields] = useState<T>(initialValues);

@@ -1,9 +1,11 @@
+import type { FC, FormEvent } from "react";
+import type { Game, Option, User } from "../../lib/contract/types";
+
 import Background from "../../components/common/Bg";
-import { FC, FormEvent, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ContractContext from "../../lib/context/contractProvider";
 import { useFormFields } from "../../lib/hooks/useFormFields";
 import Router from "next/router";
-import { Game, Option, User } from "../../lib/contract/types";
 import Link from "next/link";
 import { NoSsrComponent } from "../../components/common/NoSSR";
 import Popup from "../../components/common/Popup";

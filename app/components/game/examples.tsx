@@ -1,27 +1,20 @@
-import { MeshProps, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { FC, useCallback, useMemo, useRef, useState } from "react";
-import {
-  CameraShake,
-  Line,
-  Reflector,
-  useTexture,
-  Billboard,
-  Plane,
-  Text,
-} from "@react-three/drei";
-import {
+import type { MeshProps } from "@react-three/fiber";
+import type { FC } from "react";
+import type {
+  Mesh,
+  Vector3,
   BufferAttribute,
   BufferGeometry,
   Color,
   Float32BufferAttribute,
 } from "three";
+import type { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
+
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Reflector, useTexture, Plane, Text } from "@react-three/drei";
 import * as THREE from "three";
-import { Mesh, Vector3 } from "three";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { KernelSize } from "postprocessing";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
-import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
-import { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
 
 export const Box = (props: MeshProps) => {
   const mesh = useRef<Mesh>(null!);

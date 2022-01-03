@@ -1,7 +1,8 @@
-import React from "react";
+import type { FC } from "react";
+
 import Head from "next/head";
 
-const Background: React.FC<{
+const Background: FC<{
   title?: string;
   description?: string;
   favicon?: string;
