@@ -317,7 +317,7 @@ impl Contract {
         }
     }
 
-    pub fn renovate_house(&mut self, house_id: String, code: String) -> ReturnRes<House> {
+    pub fn renovate_house(&mut self, house_id: String, code_src: String) -> ReturnRes<House> {
         let account_id = env::signer_account_id();
         match self.houses.get(&house_id) {
             Some(mut house) => {
@@ -337,7 +337,7 @@ impl Contract {
                     )
                     .as_bytes(),
                 );
-                house.set_code(code);
+                house.set_code_src(code_src);
 
                 self.houses.insert(house.get_id(), &house);
                 return_result(house)

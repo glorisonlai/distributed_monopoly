@@ -69,7 +69,7 @@ const EditHouse = () => {
 
     const res = await contract.renovate_house({
       house_id: house_id,
-      code: codeSrc.current.value,
+      code_src: codeSrc.current.value,
     });
     if (!res.success) {
       console.error(res.error);

@@ -78,7 +78,7 @@ export interface ChangeMethods {
   roll_dice: ContractMethod<{ game_id: string }, Game>;
   buy_land: ContractMethod<{ game_id: string }, Game>;
   buy_house: ContractMethod<{ house_id: string }, House>;
-  renovate_house: ContractMethod<{ house_id: string; code: string }, House>;
+  renovate_house: ContractMethod<{ house_id: string; code_src: string }, House>;
 }
 
 export type ContractMethods = {

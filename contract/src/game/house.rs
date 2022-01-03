@@ -9,7 +9,7 @@ pub struct House {
 	name: String,
 	price: u128,
 	purchase_history: Vec<String>,
-	code: String,
+	code_src: String,
 }
 
 impl House {
@@ -20,7 +20,7 @@ impl House {
 			name,
 			price,
 			purchase_history: vec![buyer],
-			code: String::new(),
+			code_src: String::new(),
 		}
 	}
 
@@ -44,8 +44,8 @@ impl House {
 		self.purchase_history.push(buyer);
 	}
 
-	pub fn set_code(&mut self, code: String) {
-		self.code = code;
+	pub fn set_code_src(&mut self, code_src: String) {
+		self.code_src = code_src;
 	}
 
 	pub fn get_owner(&self) -> &String {
