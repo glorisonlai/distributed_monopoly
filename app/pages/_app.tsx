@@ -14,7 +14,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <div className="flex min-h-screen h-full flex-col">
-      {contract ? (
+      {false ? (
         <ContractContext.Provider value={contract}>
           <NavBar />
           <Component {...pageProps} />
