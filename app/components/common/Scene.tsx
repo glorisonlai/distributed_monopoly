@@ -1,9 +1,8 @@
 import type { Mesh } from "three";
-import type { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
 import type { FC, MutableRefObject } from "react";
 import type { ColorRepresentation } from "three";
 
-import { KernelSize } from "postprocessing";
+const { KernelSize } = require("postprocessing");
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Suspense, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
