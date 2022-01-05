@@ -1,1 +1,1 @@
-Hey, its Next!
+Hey, it's Next!
