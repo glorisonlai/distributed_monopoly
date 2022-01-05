@@ -22,9 +22,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         </ContractContext.Provider>
       ) : (
         <Background description="Loading...">
-          <Scene>
-            <Box />
-          </Scene>
+          <div>Loading...</div>
         </Background>
       )}
     </div>
