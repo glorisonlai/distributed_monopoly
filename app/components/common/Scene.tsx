@@ -6,7 +6,7 @@ const { KernelSize } = require("postprocessing");
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Suspense, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-/// <reference path="../node_modules/@types/three/index.d.ts" />
+import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import {
   Html,
