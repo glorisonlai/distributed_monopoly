@@ -5,7 +5,7 @@ import type { Mesh } from "three";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import { Plane, Text } from "@react-three/drei";
-import * as THREE from "three";
+/// <reference path="../node_modules/@types/three/index.d.ts" />
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
 
 export const Box = (props: MeshProps) => {
