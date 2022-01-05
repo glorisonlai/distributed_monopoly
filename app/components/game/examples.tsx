@@ -1,15 +1,9 @@
 import type { MeshProps } from "@react-three/fiber";
 import type { FC } from "react";
-import type {
-  Mesh,
-  Vector3,
-  BufferAttribute,
-  BufferGeometry,
-  Color,
-  Float32BufferAttribute,
-} from "three";
+import type { Mesh, BufferGeometry } from "three";
 import type { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
 
+import { Float32BufferAttribute } from "three";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Reflector, useTexture, Plane, Text } from "@react-three/drei";
@@ -43,99 +37,6 @@ export const Box = (props: MeshProps) => {
         color={hovering ? "hotpink" : "orange"}
       />
     </mesh>
-  );
-};
-
-export const Mess = (props: MeshProps) => {
-  const mesh = useRef<Mesh>(null!);
-
-  // useFrame(
-  //   () =>
-  //     mesh.current?.rotation &&
-  //     (mesh.current.rotation.x = mesh.current.rotation.y += 0.01)
-  // );
-
-  const iterations = 8000;
-  const r = 800;
-  const points: number[] = useMemo(
-    () =>
-      Array.from({ length: iterations * 3 }, () => Math.random() * r - r / 2),
-    []
-  );
-  const colors = useMemo(() => points.map((e) => e / r + 0.5), [points]);
-  // const points = useMemo(
-  //   () =>
-  //     Array.from(
-  //       { length: iterations },
-  //       () =>
-  //         new Vector3(
-  //           Math.random() * r - r / 2,
-  //           Math.random() * r - r / 2,
-  //           Math.random() * r - r / 2
-  //         )
-  //     ),
-  //   []
-  // );
-
-  // const colors = useMemo(
-  //   () => points.map((vec) => vec.toArray().map((e) => e / r + 0.5)),
-  //   [points]
-  // );
-  const replacer = (_: string, value: any) =>
-    typeof value === "function" ? value.toString() : value;
-
-  const onUpdate = useCallback(
-    (self: BufferGeometry) => {
-      self.setAttribute("position", new Float32BufferAttribute(points, 3));
-      self.setAttribute("colour", new Float32BufferAttribute(colors, 3));
-      self.computeBoundingSphere();
-      console.log(JSON.stringify(self, replacer, 2));
-    },
-    [points, colors]
-  );
-
-  // const colors: number[] = positions.map((x) => x / r + 0.5);
-
-  // geometry.setAttribute(
-  //   "position",
-  //   new THREE.Float32BufferAttribute(positions, 3)
-  // );
-  // geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-
-  // const geometry = new BufferGeometry().setFrom;
-  // geometry.computeBoundingSphere();
-
-  // const lines = new THREE.Line(geometry);
-
-  // console.log(JSON.stringify(lines, replacer, 2));
-
-  return (
-    // <mesh {...props} position={[0, 0, -1000]} ref={mesh}>
-    <line {...props} position={[0, -2.5, -100]} ref={mesh}>
-      <bufferGeometry attach="geometry" onUpdate={onUpdate} />
-    </line>
-    // </mesh>
-  );
-};
-
-const Ground = (props: MeshReflectorMaterialProps) => {
-  const [floor, normal] = useTexture([
-    "/SurfaceImperfections003_1K_var1.jpg",
-    "/SurfaceImperfections003_1K_Normal.jpg",
-  ]);
-  return (
-    <Reflector resolution={1024} args={[8, 8]} {...props}>
-      {(Material, props) => (
-        <Material
-          color="#f0f0f0"
-          metalness={0}
-          roughnessMap={floor}
-          normalMap={normal}
-          normalScale={[2, 2]}
-          {...props}
-        />
-      )}
-    </Reflector>
   );
 };
 
@@ -208,17 +109,20 @@ export const Triangle = () => {
   );
 };
 
-export const FloatingText: FC<{ size: number; color: string; text: string }> =
-  ({ size, color, text }) => {
-    const ref = useRef<Mesh>(null!);
-    return (
-      <mesh ref={ref} scale={[size, size, size] /*width, height, depth*/}>
-        <Text color={color} anchorX="center" anchorY="middle">
-          {text}
-        </Text>
-      </mesh>
-    );
-  };
+export const FloatingText: FC<{
+  size: number;
+  color: string;
+  text: string;
+}> = ({ size, color, text }) => {
+  const ref = useRef<Mesh>(null!);
+  return (
+    <mesh ref={ref} scale={[size, size, size] /*width, height, depth*/}>
+      <Text color={color} anchorX="center" anchorY="middle">
+        {text}
+      </Text>
+    </mesh>
+  );
+};
 
 export const Sign: FC<{ url: string }> = ({ url }) => {
   const mesh = useRef<Mesh>(null!);

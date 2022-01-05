@@ -3,7 +3,8 @@ import getConfig from "next/config";
 // Find better way than to expose contract name to the world
 const { publicRuntimeConfig } = getConfig();
 const CONTRACT_NAME =
-  publicRuntimeConfig.PUBLIC_CONTRACT || "distributed_monopoly";
+  publicRuntimeConfig.PUBLIC_CONTRACT ||
+  "distributed_monopoly.glo12345.testnet";
 
 type NearEnv =
   | "production"

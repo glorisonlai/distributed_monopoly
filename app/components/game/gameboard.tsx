@@ -2,7 +2,7 @@ import type { FC } from "react";
 import type { Game } from "../../lib/contract/types";
 
 import { useContext, useState } from "react";
-import House from "./house";
+import ModelHouse from "./house";
 import Gamemap from "./gamemap";
 import ContractContext from "../../lib/context/contractProvider";
 import Dice from "./dice";
@@ -70,7 +70,7 @@ const Gameboard: FC<{ game: Game }> = ({ game }) => {
             Join Game
           </button>
         )}
-        <House
+        <ModelHouse
           houseId={game.occupied_land[position]}
           gameId={game.id}
           playerOnHouse={game.player_pos[currentUser.accountId] === position}

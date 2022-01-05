@@ -47,14 +47,12 @@ const Scene: FC<{
       link.click();
     };
 
-    window.export = () => {
+    const exportScene = () => {
       if (exportTo) {
         const exporter = new GLTFExporter();
         exporter.parse(
           mesh.current,
           (gltf) => {
-            window.export = mesh.current;
-
             const blob = new Blob([JSON.stringify(gltf)], {
               type: "text/plain",
             });
@@ -68,7 +66,7 @@ const Scene: FC<{
     return <group ref={mesh}>{children}</group>;
   };
 
-  const Ground = (props: MeshReflectorMaterialProps) => {
+  const Ground = (props: any) => {
     const [floor, normal] = useTexture([
       "/SurfaceImperfections003_1K_var1.jpg",
       "/SurfaceImperfections003_1K_Normal.jpg",
@@ -81,7 +79,7 @@ const Scene: FC<{
             metalness={0}
             roughnessMap={floor}
             normalMap={normal}
-            normalScale={[2, 2]}
+            normalScale={new THREE.Vector2(2, 2)}
             {...props}
           />
         )}
