@@ -15,6 +15,7 @@ import {
   Reflector,
   useTexture,
 } from "@react-three/drei";
+import { NoSsrComponent } from "./NoSSR";
 
 const Scene: FC<{
   className?: string;
@@ -92,46 +93,48 @@ const Scene: FC<{
   };
 
   return (
-    <Canvas className={`${className || ""} max-w-[screen] w-auto`}>
-      {bgColor && <color attach="background" args={bgColor} />}
-      <ambientLight />
-      <pointLight />
-      {/* <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} /> */}
-      <Suspense fallback={<Loader />}>
-        <Rig>{children}</Rig>
-        {showGround && (
-          <Ground
-            mirror={1}
-            blur={[500, 100]}
-            mixBlur={12}
-            mixStrength={1.5}
-            rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-            position-y={-0.8}
+    <NoSsrComponent>
+      <Canvas className={`${className || ""} max-w-[screen] w-auto`}>
+        {bgColor && <color attach="background" args={bgColor} />}
+        <ambientLight />
+        <pointLight />
+        {/* <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} /> */}
+        <Suspense fallback={<Loader />}>
+          <Rig>{children}</Rig>
+          {showGround && (
+            <Ground
+              mirror={1}
+              blur={[500, 100]}
+              mixBlur={12}
+              mixStrength={1.5}
+              rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+              position-y={-0.8}
+            />
+          )}
+          {showBlur && (
+            <EffectComposer multisampling={8}>
+              <Bloom
+                kernelSize={3}
+                luminanceThreshold={0}
+                luminanceSmoothing={0.4}
+                intensity={0.6}
+              />
+              <Bloom
+                kernelSize={KernelSize.HUGE}
+                luminanceThreshold={0}
+                luminanceSmoothing={0}
+                intensity={0.5}
+              />
+            </EffectComposer>
+          )}
+          <CameraShake
+            yawFrequency={0.2}
+            pitchFrequency={0.2}
+            rollFrequency={0.2}
           />
-        )}
-        {showBlur && (
-          <EffectComposer multisampling={8}>
-            <Bloom
-              kernelSize={3}
-              luminanceThreshold={0}
-              luminanceSmoothing={0.4}
-              intensity={0.6}
-            />
-            <Bloom
-              kernelSize={KernelSize.HUGE}
-              luminanceThreshold={0}
-              luminanceSmoothing={0}
-              intensity={0.5}
-            />
-          </EffectComposer>
-        )}
-        <CameraShake
-          yawFrequency={0.2}
-          pitchFrequency={0.2}
-          rollFrequency={0.2}
-        />
-      </Suspense>
-    </Canvas>
+        </Suspense>
+      </Canvas>
+    </NoSsrComponent>
   );
 };
 export default Scene;
