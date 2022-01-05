@@ -1,12 +1,10 @@
 import type { MeshProps } from "@react-three/fiber";
 import type { FC } from "react";
-import type { Mesh, BufferGeometry } from "three";
-import type { MeshReflectorMaterialProps } from "@react-three/drei/materials/MeshReflectorMaterial";
+import type { Mesh } from "three";
 
-import { Float32BufferAttribute } from "three";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { Reflector, useTexture, Plane, Text } from "@react-three/drei";
+import { useMemo, useRef, useState } from "react";
+import { Plane, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
 
@@ -56,7 +54,7 @@ export const Triangle = () => {
           path.subPaths[0].getPoints(),
           path.userData!.style
         ),
-      []
+      [path.subPaths, path.userData]
     );
     return (
       <group ref={ref}>

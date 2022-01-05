@@ -6,7 +6,7 @@ import { login, logout } from "../../lib/contract/utils";
 import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
 import { CgUserlane } from "react-icons/cg";
-import { IoMdArrowDropdown } from "react-icons/Io";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const NavBar: FC<{}> = () => {
   const { walletConnection, currentUser, nearConfig, contract } =
