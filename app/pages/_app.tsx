@@ -5,7 +5,7 @@ import ContractContext from "../lib/context/contractProvider";
 import { useContract } from "../lib/hooks/useContract";
 import NavBar from "../components/common/NavBar";
 import Scene from "../components/common/Scene";
-import { Box } from "../components/game/examples";
+import { Box, FloatingText } from "../components/game/examples";
 import Background from "../components/common/Bg";
 import Footer from "../components/common/Footer";
 
@@ -22,7 +22,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         </ContractContext.Provider>
       ) : (
         <Background description="Loading...">
-          <div>Loading...</div>
+          <Scene>
+            <FloatingText text="Loading..." color="white" size={10} />
+          </Scene>
         </Background>
       )}
     </div>

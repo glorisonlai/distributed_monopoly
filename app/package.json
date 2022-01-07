@@ -25,11 +25,11 @@
     "web3": "^1.6.1"
   },
   "devDependencies": {
-    "@types/three": "^0.136.1",
     "@types/big.js": "^6.1.2",
     "@types/node": "17.0.2",
     "@types/react": "17.0.37",
     "@types/react-icons": "^3.0.0",
+    "@types/three": "^0.136.1",
     "arlocal": "^1.1.13",
     "autoprefixer": "^10.4.0",
     "eslint": "8.5.0",

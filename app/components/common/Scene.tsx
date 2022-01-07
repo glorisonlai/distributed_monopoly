@@ -2,7 +2,7 @@ import type { Mesh } from "three";
 import type { FC, MutableRefObject } from "react";
 import type { ColorRepresentation } from "three";
 
-const { KernelSize } = require("postprocessing");
+import { KernelSize } from "postprocessing";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Suspense, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";

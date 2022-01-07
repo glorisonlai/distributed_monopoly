@@ -74,7 +74,7 @@ const GameLobby = () => {
           <>
             <hr className="divide-y-2 my-2" />
             <h3 className="text-xl">Nothing to see here!</h3>
-            <h4 className="text-gray-300">Try creating a new game</h4>
+            <h4 className="text-gray-300">Try creating a new game?</h4>
           </>
         )}
       </div>

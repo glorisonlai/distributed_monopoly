@@ -20,8 +20,9 @@ type NearEnv =
 export type NearConfig = ReturnType<typeof nearConfig>;
 
 const nearConfig = (env: NearEnv) => {
+  console.log(env);
   switch (env) {
-    case "production":
+    // case "production":
     case "mainnet":
       return {
         networkId: "mainnet",
@@ -35,6 +36,7 @@ const nearConfig = (env: NearEnv) => {
           Accept: "application/json",
         },
       };
+    case "production":
     case "development":
     case "testnet":
       return {
