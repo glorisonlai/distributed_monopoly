@@ -24,7 +24,12 @@ const Home: NextPage = () => {
             {walletConnection.isSignedIn() ? (
               <Link href="/game">Go to Lobby</Link>
             ) : (
-              <button onClick={() => login(walletConnection)}>Login</button>
+              <button
+                className="w-full"
+                onClick={() => login(walletConnection)}
+              >
+                Login
+              </button>
             )}
           </button>
         </div>
